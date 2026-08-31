@@ -9,25 +9,25 @@
   "categories": ["utilities", "lifestyle"],
   "icons": [
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAMAAABAvyKDAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAACpJREFUeN3twQENAAAAwqD3T20PBxAAAAAAAAAAAAAAAAAAAAAAAAAAwI8B4AABm2ptXAAAAABJRU5ErkJggg==",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAMAAABAvyKDAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAACpJREFUeN3twQENAAAAwqD3T20PBxAAAAAAAAAAAAAAAAAAAAAAAAAAwI8B4AABm2ptXAAAAABJRU5ErkJggg==",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAEACAMAAAC204e3AAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAC5JREFUeN3twQEBAAAAgiD/r25IQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC8GyAABkI/AogAAAABJRU5ErkJggg==",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAEACAMAAAC204e3AAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAC5JREFUeN3twQEBAAAAgiD/r25IQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC8GyAABkI/AogAAAABJRU5ErkJggg==",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
