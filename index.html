@@ -3,272 +3,440 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProTrading Bullex Style OTC</title>
-  <link rel="manifest" href="/manifest.json">
+  <title>Bico Perto — Tem serviço? Tem alguém perto para fazer.</title>
   <style>
+    :root {
+      --primary: #6c5ce7;
+      --primary-dark: #574b90;
+      --secondary: #00b894;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #2d3436;
+      --text-muted: #636e72;
+      --border: #dfe6e9;
+      --danger: #d63031;
+      --warning: #fdcb6e;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: #0e1217; color: #eceff1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* Header */
+    header { background-color: var(--primary); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .logo-area h1 { font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .logo-area p { font-size: 0.65rem; opacity: 0.9; }
     
-    header { background-color: #171d25; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #262e3b; }
-    .logo { font-size: 1rem; font-weight: bold; color: #f0b90b; }
-    .balance-card { background-color: #202833; padding: 4px 10px; border-radius: 6px; text-align: right; }
-    .balance-title { font-size: 0.6rem; color: #848e9c; }
-    .balance-value { font-size: 0.9rem; font-weight: bold; color: #0ecb81; }
+    .role-selector { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 4px 8px; border-radius: 20px; font-size: 0.75rem; outline: none; font-weight: bold; cursor: pointer; }
+    .role-selector option { color: #333; }
 
-    /* Barra Superior de Opções */
-    .top-bar { background-color: #131722; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #262e3b; gap: 6px; }
-    select { background-color: #202833; color: white; border: 1px solid #364254; padding: 5px; border-radius: 4px; font-size: 0.8rem; outline: none; }
-    
-    .timer-badge { background: #202833; padding: 4px 8px; border-radius: 4px; border: 1px solid #364254; display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: #f0b90b; }
-    
-    /* Painel de Sinais */
-    .signal-card { background: #171d25; padding: 6px 12px; border-bottom: 1px solid #262e3b; display: flex; justify-content: space-between; align-items: center; }
-    .signal-title { font-size: 0.65rem; color: #848e9c; }
-    .signal-status { font-size: 0.9rem; font-weight: bold; }
-    .signal-buy { color: #0ecb81; }
-    .signal-sell { color: #f6465d; }
-    .signal-neutral { color: #f0b90b; }
+    /* Navigation */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: var(--text-muted); text-decoration: none; cursor: pointer; border: none; background: none; flex: 1; }
+    .nav-item.active { color: var(--primary); font-weight: bold; }
+    .nav-item span { font-size: 1.2rem; margin-bottom: 2px; }
 
-    #chart-container { flex: 1; width: 100%; background: #0e1217; }
+    /* Main Container */
+    .container { padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
 
-    /* Posições Ativas */
-    .positions-panel { background: #131722; max-height: 90px; overflow-y: auto; border-top: 1px solid #262e3b; padding: 4px 8px; font-size: 0.75rem; }
-    .position-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #202833; }
+    /* Cards & Components */
+    .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .btn { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; margin-top: 8px; }
+    .btn-secondary { background: var(--secondary); }
+    .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+    .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; }
 
-    /* Painel de Operação */
-    .trading-panel { background: #171d25; padding: 8px 12px; display: flex; gap: 8px; border-top: 1px solid #262e3b; align-items: center; }
-    .input-group { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-    .input-group label { font-size: 0.65rem; color: #848e9c; }
-    .input-group input, .input-group select { background: #202833; border: 1px solid #364254; color: white; padding: 6px; border-radius: 4px; font-size: 0.8rem; }
-    
-    .btn-buy { background-color: #0ecb81; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 0.9rem; }
-    .btn-sell { background-color: #f6465d; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 0.9rem; }
+    /* Badges */
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+    .badge-urgency-agora { background: #ffeaa7; color: #d63031; }
+    .badge-urgency-hoje { background: #dfe6e9; color: #2d3436; }
+    .badge-status { background: #e17055; color: white; }
+    .badge-proposals { background: #00b894; color: white; }
 
-    .green { color: #0ecb81; }
-    .red { color: #f6465d; }
+    /* Form Fields */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
+    .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; background: #fff; }
+    .form-control:focus { border-color: var(--primary); }
+
+    /* AI Assistant Box */
+    .ai-box { background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); padding: 12px; border-radius: 10px; margin-bottom: 12px; font-size: 0.8rem; color: #2d3436; }
+    .ai-box strong { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; color: #3b3b98; }
+
+    /* Grid Categories */
+    .categories-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+    .category-item { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; transition: transform 0.1s; }
+    .category-item:active { transform: scale(0.95); }
+    .category-item span { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+    .category-item p { font-size: 0.65rem; color: var(--text); font-weight: 600; }
+
+    /* Job Card Feed */
+    .job-card { border-left: 4px solid var(--primary); }
+    .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .job-title { font-size: 0.95rem; font-weight: bold; }
+    .job-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 10px; margin: 6px 0; }
+    .job-price { font-size: 0.9rem; font-weight: 800; color: var(--secondary); margin-top: 4px; }
+
+    /* Proposal Card */
+    .proposal-card { background: #f1f2f6; border-radius: 8px; padding: 10px; margin-top: 8px; }
+    .provider-profile { display: flex; align-items: center; gap: 10px; }
+    .provider-avatar { width: 36px; height: 36px; border-radius: 50%; background: #ccc; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+
+    /* Chat Modal/Overlay */
+    .chat-box { background: #fff; border: 1px solid var(--border); border-radius: 8px; height: 180px; overflow-y: auto; padding: 8px; margin-bottom: 8px; font-size: 0.8rem; }
+    .chat-msg { margin-bottom: 6px; padding: 6px 10px; border-radius: 6px; max-width: 80%; }
+    .chat-msg.me { background: #dcdde1; margin-left: auto; text-align: right; }
+    .chat-msg.other { background: #e17055; color: white; }
+
+    /* Admin Table */
+    .admin-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
+    .stat-card { background: #fff; padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+    .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); }
+
+    /* View Controller */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
   </style>
 </head>
 <body>
 
+  <!-- Header -->
   <header>
-    <div class="logo">⚡ Bullex OTC Pro</div>
-    <div class="balance-card">
-      <div class="balance-title">CONTA DEMO</div>
-      <div class="balance-value" id="user-balance">R$ 1.000,00</div>
+    <div class="logo-area">
+      <h1>📍 Bico Perto</h1>
+      <p>Tem serviço? Tem alguém perto para fazer.</p>
+    </div>
+    <div>
+      <select id="roleSelector" class="role-selector" onchange="switchRole(this.value)">
+        <option value="client">Modo: Cliente</option>
+        <option value="provider">Modo: Prestador</option>
+        <option value="admin">Modo: Admin</option>
+      </select>
     </div>
   </header>
 
-  <div class="top-bar">
-    <select id="asset-select" onchange="changeAsset()">
-      <option value="BINANCE:BTCUSDT">BTC/USD (OTC)</option>
-      <option value="BINANCE:ETHUSDT">ETH/USD (OTC)</option>
-      <option value="BINANCE:SOLUSDT">SOL/USD (OTC)</option>
-      <option value="FX:EURUSD">EUR/USD (OTC)</option>
-    </select>
-    
-    <div class="timer-badge">
-      <span>⏱️ Vela:</span>
-      <strong id="candle-clock">00:00</strong>
-    </div>
+  <!-- Content Container -->
+  <div class="container">
 
-    <button style="background:#202833; color:white; border:1px solid #364254; padding:4px 8px; border-radius:4px; font-size:0.7rem;" onclick="configureBalance()">⚙️ Saldo</button>
-  </div>
-
-  <div class="signal-card">
-    <div>
-      <div class="signal-title">SINAL IA</div>
-      <div class="signal-status signal-neutral" id="signal-text">ANALISANDO...</div>
-    </div>
-    <div style="font-size:0.75rem; color:#848e9c;" id="signal-accuracy">Força: --%</div>
-  </div>
-
-  <div id="chart-container"></div>
-
-  <div class="positions-panel" id="positions-list">
-    <div style="color: #848e9c; text-align: center; font-size: 0.7rem;">Nenhuma posição aberta no momento</div>
-  </div>
-
-  <div class="trading-panel">
-    <div class="input-group" style="max-width: 80px;">
-      <label>Timeframe</label>
-      <select id="timeframe-select" onchange="changeAsset()">
-        <option value="1">1 Min</option>
-        <option value="5">5 Min</option>
-      </select>
-    </div>
-
-    <div class="input-group">
-      <label>Valor (R$)</label>
-      <input type="number" id="trade-amount" value="100" min="10">
-    </div>
-
-    <button class="btn-buy" onclick="executeTrade('COMPRA')">▲ CALL</button>
-    <button class="btn-sell" onclick="executeTrade('VENDA')">▼ PUT</button>
-  </div>
-
-  <script src="https://s3.tradingview.com/tv.js"></script>
-  <script>
-    let balance = parseFloat(localStorage.getItem('trading_balance')) || 1000.00;
-    let activePositions = [];
-    let currentSignal = 'NEUTRO';
-
-    function updateBalanceDisplay() {
-      document.getElementById('user-balance').innerText = `R$ ${balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-      localStorage.setItem('trading_balance', balance);
-    }
-
-    function loadChart() {
-      const symbol = document.getElementById('asset-select').value;
-      const tf = document.getElementById('timeframe-select').value;
-      document.getElementById('chart-container').innerHTML = '';
-      new TradingView.widget({
-        "autosize": true,
-        "symbol": symbol,
-        "interval": tf,
-        "timezone": "America/Sao_Paulo",
-        "theme": "dark",
-        "style": "1",
-        "locale": "br",
-        "enable_publishing": false,
-        "hide_top_toolbar": false,
-        "container_id": "chart-container"
-      });
-    }
-
-    /* Lógica do Relógio e Expiração Bullex */
-    function updateCandleClock() {
-      const now = new Date();
-      const seconds = now.getSeconds();
-      const tfMinutes = parseInt(document.getElementById('timeframe-select').value);
-      const tfSeconds = tfMinutes * 60;
+    <!-- ==================== VISÃO CLIENTE ==================== -->
+    <div id="view-client" class="view-section active">
       
-      const currentMinSec = (now.getMinutes() % tfMinutes) * 60 + seconds;
-      const remainingSeconds = tfSeconds - currentMinSec;
+      <!-- Solicitar Bico / IA -->
+      <div class="card">
+        <h3>✨ O que você precisa hoje?</h3>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Descreva o que precisa ou escolha uma categoria abaixo.</p>
+        
+        <div class="ai-box" id="aiSuggestionBox" style="display:none;">
+          <strong>🤖 IA Bico Perto Assistente:</strong>
+          <span id="aiSuggestionText">Analisando seu pedido...</span>
+        </div>
 
-      const m = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
-      const s = (remainingSeconds % 60).toString().padStart(2, '0');
-      document.getElementById('candle-clock').innerText = `${m}:${s}`;
+        <div class="form-group">
+          <input type="text" id="jobInput" class="form-control" placeholder="Ex: Preciso instalar suporte de TV de 50' hoje à tarde..." oninput="analyzeWithAI(this.value)">
+        </div>
 
-      updatePositions(remainingSeconds);
-    }
+        <div class="categories-grid">
+          <div class="category-item" onclick="quickPublish('Casa & Reparos', '🔧')">
+            <span>🔧</span>
+            <p>Casa & Reparos</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Montagem', '📦')">
+            <span>📦</span>
+            <p>Montagem</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Limpeza', '🧹')">
+            <span>🧹</span>
+            <p>Limpeza</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Tecnologia', '💻')">
+            <span>💻</span>
+            <p>Tecnologia</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Entregas', '🛵')">
+            <span>🛵</span>
+            <p>Entregas</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Veículos', '🚗')">
+            <span>🚗</span>
+            <p>Veículos</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Jardim', '🌳')">
+            <span>🌳</span>
+            <p>Jardinagem</p>
+          </div>
+          <div class="category-item" onclick="quickPublish('Outros', '⚡')">
+            <span>⚡</span>
+            <p>Outros</p>
+          </div>
+        </div>
 
-    setInterval(updateCandleClock, 1000);
+        <button class="btn" style="margin-top: 12px;" onclick="openPublishModal()">➕ Publicar Bico Completo</button>
+      </div>
 
-    /* Executar Operação */
-    function executeTrade(type) {
-      const amount = parseFloat(document.getElementById('trade-amount').value);
-      if (isNaN(amount) || amount <= 0) return alert("Insira um valor válido!");
-      if (amount > balance) return alert("Saldo insuficiente!");
+      <!-- Meus Pedidos de Bico -->
+      <h3>📋 Meus Pedidos Ativos</h3>
+      <div id="clientJobsList" style="margin-top: 8px;">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
 
-      balance -= amount;
-      updateBalanceDisplay();
 
-      const tfMinutes = parseInt(document.getElementById('timeframe-select').value);
-      const tfSeconds = tfMinutes * 60;
-      const halfTime = tfSeconds / 2;
+    <!-- ==================== VISÃO PRESTADOR ==================== -->
+    <div id="view-provider" class="view-section">
+      
+      <!-- Status do Prestador -->
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h4 style="margin-bottom: 2px;">Status do Profissional</h4>
+          <span style="font-size: 0.75rem; color: var(--secondary); font-weight: bold;" id="providerStatusText">🟢 Disponível para trabalhar</span>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="toggleProviderStatus()">Ficar Offline</button>
+      </div>
 
-      const now = new Date();
-      const currentMinSec = (now.getMinutes() % tfMinutes) * 60 + now.getSeconds();
-      const remainingCurrentCandle = tfSeconds - currentMinSec;
+      <!-- Ganhos do Prestador -->
+      <div class="card" style="background: linear-gradient(135deg, #10ac84, #1dd1a1); color: white;">
+        <div style="font-size: 0.75rem; opacity: 0.9;">SEUS GANHOS ESTIMADOS (ESTE MÊS)</div>
+        <div style="font-size: 1.5rem; font-weight: bold; margin: 4px 0;">R$ 1.840,00</div>
+        <div style="font-size: 0.7rem;">⚡ 24 bicos concluídos com sucesso</div>
+      </div>
 
-      // Se faltar mais da metade da vela: expira no fim da vela atual.
-      // Se faltar menos da metade: expira no fim da PRÓXIMA vela.
-      let totalDuration = 0;
-      if (remainingCurrentCandle >= halfTime) {
-        totalDuration = remainingCurrentCandle;
-      } else {
-        totalDuration = remainingCurrentCandle + tfSeconds;
+      <!-- Feed de Bicos Próximos -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h3>📌 Bicos Perto de Você</h3>
+        <span style="font-size: 0.75rem; color: var(--primary); font-weight: bold;">Raio: 10km 📍</span>
+      </div>
+
+      <div id="providerFeedList">
+        <!-- Injetado dinamicamente -->
+      </div>
+    </div>
+
+
+    <!-- ==================== VISÃO ADMIN ==================== -->
+    <div id="view-admin" class="view-section">
+      <h3>📊 Painel Administrativo</h3>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Visão geral da plataforma Bico Perto</p>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-value">1,248</div>
+          <div class="stat-label">Usuários Ativos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3,890</div>
+          <div class="stat-label">Bicos Publicados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">R$ 42.500</div>
+          <div class="stat-label">Volume de Negócios</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">98.4%</div>
+          <div class="stat-label">Taxa de Sucesso</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>🔧 Gestão de Categorias</h4>
+        <div id="adminCategoriesList" style="margin: 8px 0; font-size: 0.8rem;">
+          <!-- Categorias Lista -->
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="addCategoryPrompt()">+ Nova Categoria</button>
+      </div>
+
+      <div class="card">
+        <h4>⚠️ Denúncias / Suporte</h4>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Nenhuma denúncia grave pendente no momento.</p>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- MODAL DE PUBLICAÇÃO COMPLETA DE BICO -->
+  <div id="publishModal" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; padding: 16px; overflow-y: auto;">
+    <div class="card" style="max-width: 500px; margin: 20px auto;">
+      <h3>📝 Publicar Novo Bico</h3>
+      <br>
+      <div class="form-group">
+        <label>O que você precisa?</label>
+        <input type="text" id="modalTitle" class="form-control" placeholder="Ex: Instalação de Torneira Elétrica">
+      </div>
+
+      <div class="form-group">
+        <label>Categoria</label>
+        <select id="modalCategory" class="form-control">
+          <option value="Casa & Reparos">Casa & Reparos</option>
+          <option value="Montagem de Móveis">Montagem de Móveis</option>
+          <option value="Limpeza & Organização">Limpeza & Organização</option>
+          <option value="Tecnologia">Tecnologia</option>
+          <option value="Entregas">Entregas</option>
+          <option value="Veículos">Veículos</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Quando precisa?</label>
+        <select id="modalUrgency" class="form-control">
+          <option value="AGORA">🔴 AGORA (Urgente)</option>
+          <option value="HOJE">🟠 HOJE</option>
+          <option value="AMANNĀ">🟡 AMANHÃ</option>
+          <option value="AGENDAR">🔵 Agendar Data</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Orçamento Sugerido (R$)</label>
+        <input type="number" id="modalBudget" class="form-control" placeholder="Ex: 80 (ou deixe em branco para propostas)">
+      </div>
+
+      <div class="form-group">
+        <label>Bairro / Localização</label>
+        <input type="text" id="modalLocation" class="form-control" value="Centro — Aprox. 1.2km">
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button class="btn btn-outline" onclick="closePublishModal()">Cancelar</button>
+        <button class="btn" onclick="saveNewJob()">Publicar Bico</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL DE PROPOSTA (PRESTADOR ENVIANDO) -->
+  <div id="proposalModal" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; padding: 16px;">
+    <div class="card" style="max-width: 500px; margin: 40px auto;">
+      <h3>📩 Enviar Proposta de Bico</h3>
+      <p id="proposalJobTitle" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;"></p>
+
+      <div class="form-group">
+        <label>Sua Oferta (R$)</label>
+        <input type="number" id="proposalValue" class="form-control" placeholder="Ex: 90">
+      </div>
+
+      <div class="form-group">
+        <label>Mensagem para o Cliente</label>
+        <textarea id="proposalMsg" class="form-control" rows="3" placeholder="Ex: Consigo chegar em 20 minutos. Já tenho as ferramentas necessárias."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button class="btn btn-outline" onclick="closeProposalModal()">Cancelar</button>
+        <button class="btn btn-secondary" onclick="submitProposal()">Enviar Proposta</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('home')" id="nav-home">
+      <span>🏠</span>
+      Início
+    </button>
+    <button class="nav-item" onclick="switchTab('jobs')" id="nav-jobs">
+      <span>⚡</span>
+      Bicos
+    </button>
+
+    <button class="nav-item" onclick="switchTab('messages')" id="nav-messages">
+      <span>💬</span>
+      Chat
+    </button>
+
+    <button class="nav-item" onclick="switchTab('profile')" id="nav-profile">
+      <span>👤</span>
+      Perfil
+    </button>
+  </nav>
+
+  <script>
+    // ================= BANCO DE DADOS EM MEMÓRIA (MOCK DATA) =================
+    let currentRole = 'client'; // client | provider | admin
+    
+    let categories = [
+      "Casa & Reparos", "Montagem de Móveis", "Limpeza", "Tecnologia", "Entregas", "Veículos", "Jardim", "Outros"
+    ];
+
+    let jobs = [
+      {
+        id: 101,
+        title: "Instalação de Suporte de TV 50' na Parede",
+        category: "Casa & Reparos",
+        urgency: "HOJE",
+        budget: 90,
+        location: "Vila Mariana (2.3 km)",
+        clientName: "Carlos Eduardo",
+        status: "ABERTO", // ABERTO, CONTRATADO, A_CAMINHO, NO_LOCAL, CONCLUIDO
+        proposals: [
+          { providerName: "João Silva", rating: "4.9 ⭐ (87 bicos)", value: 90, msg: "Consigo chegar às 15h. Tenho furadeira e buchas apropriadas." },
+          { providerName: "Roberto M.", rating: "4.8 ⭐ (32 bicos)", value: 80, msg: "Moro pertinho, posso ir agora mesmo." }
+        ]
+      },
+      {
+        id: 102,
+        title: "Montar Guarda-Roupa Solteiro 2 Portas",
+        category: "Montagem de Móveis",
+        urgency: "AGORA",
+        budget: 120,
+        location: "Pinheiros (4.1 km)",
+        clientName: "Ana Maria",
+        status: "ABERTO",
+        proposals: []
       }
+    ];
 
-      const asset = document.getElementById('asset-select').selectedOptions[0].text;
+    let selectedJobForProposal = null;
 
-      const position = {
-        id: Date.now(),
-        asset: asset,
-        type: type,
-        amount: amount,
-        timeLeft: totalDuration,
-        targetSignal: currentSignal
-      };
-
-      activePositions.push(position);
-      renderPositions();
+    // ================= NAVEGAÇÃO DE PÁGINA E PERFIS =================
+    function switchRole(role) {
+      currentRole = role;
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      
+      if (role === 'client') {
+        document.getElementById('view-client').classList.add('active');
+        renderClientJobs();
+      } else if (role === 'provider') {
+        document.getElementById('view-provider').classList.add('active');
+        renderProviderFeed();
+      } else if (role === 'admin') {
+        document.getElementById('view-admin').classList.add('active');
+        renderAdminStats();
+      }
     }
 
-    /* Atualizar Posições Ativas */
-    function updatePositions(candleRemainingSec) {
-      if (activePositions.length === 0) return;
-
-      activePositions.forEach((pos, index) => {
-        pos.timeLeft--;
-
-        if (pos.timeLeft <= 0) {
-          // Fechamento da ordem
-          const win = pos.type === pos.targetSignal ? Math.random() < 0.75 : Math.random() < 0.30;
-          if (win) {
-            const profit = pos.amount * 1.85;
-            balance += profit;
-            updateBalanceDisplay();
-          }
-          activePositions.splice(index, 1);
-        }
-      });
-
-      renderPositions();
+    function switchTab(tab) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      
+      if (tab === 'home' || tab === 'jobs') {
+        document.getElementById('nav-' + tab).classList.add('active');
+        switchRole(currentRole);
+      } else if (tab === 'messages') {
+        document.getElementById('nav-messages').classList.add('active');
+        alert("💬 Chat Bico Perto: Selecione uma proposta ativa em 'Meus Pedidos' para conversar diretamente com o profissional.");
+      } else if (tab === 'profile') {
+        document.getElementById('nav-profile').classList.add('active');
+        alert("👤 Perfil do Usuário: Reputação ★ 4.9 | Bicos Realizados: 12 | Selo de Confiança Ativo ✅");
+      }
     }
 
-    function renderPositions() {
-      const container = document.getElementById('positions-list');
-      if (activePositions.length === 0) {
-        container.innerHTML = '<div style="color: #848e9c; text-align: center; font-size: 0.7rem;">Nenhuma posição aberta</div>';
+    // ================= INTELIGÊNCIA ARTIFICIAL SIMULADA =================
+    function analyzeWithAI(text) {
+      const aiBox = document.getElementById('aiSuggestionBox');
+      const aiText = document.getElementById('aiSuggestionText');
+
+      if (text.length < 8) {
+        aiBox.style.display = 'none';
         return;
       }
 
-      container.innerHTML = activePositions.map(pos => `
-        <div class="position-item">
-          <span>${pos.type === 'COMPRA' ? '▲ CALL' : '▼ PUT'} - ${pos.asset}</span>
-          <span>R$ ${pos.amount.toFixed(2)}</span>
-          <span style="color: #f0b90b;">⏱️ ${pos.timeLeft}s</span>
-        </div>
-      `).join('');
-    }
-
-    /* Sistema de Sinais */
-    function generateNewSignal() {
-      const signals = [
-        { text: '🟢 FORTE COMPRA', class: 'signal-buy', type: 'COMPRA', minAcc: 82, maxAcc: 97 },
-        { text: '🔴 FORTE VENDA', class: 'signal-sell', type: 'VENDA', minAcc: 80, maxAcc: 96 },
-        { text: '⚪ NEUTRO', class: 'signal-neutral', type: 'NEUTRO', minAcc: 50, maxAcc: 65 }
-      ];
-      const chosen = signals[Math.floor(Math.random() * signals.length)];
-      const accuracy = Math.floor(Math.random() * (chosen.maxAcc - chosen.minAcc + 1)) + chosen.minAcc;
-
-      const el = document.getElementById('signal-text');
-      el.innerText = chosen.text;
-      el.className = `signal-status ${chosen.class}`;
-      document.getElementById('signal-accuracy').innerText = `Força: ${accuracy}%`;
-      currentSignal = chosen.type;
-    }
-
-    setInterval(generateNewSignal, 12000);
-
-    function changeAsset() {
-      loadChart();
-    }
-
-    function configureBalance() {
-      const newBal = prompt("Novo saldo demo (R$):", balance);
-      if (newBal && !isNaN(newBal) && newBal > 0) {
-        balance = parseFloat(newBal);
-        updateBalanceDisplay();
-      }
-    }
-
-    // Inicializar
-    updateBalanceDisplay();
-    loadChart();
-    generateNewSignal();
-  </script>
-</body>
-</html>
-
+      aiBox.style.display = 'block';
+      
+      const lower = text.toLowerCase();
+      if (lower.includes('tv') || lower.includes('suporte') || lower.includes('parede')) {
+        aiText.innerHTML = "Identificado: <strong>Casa & Reparos / Instalação</strong>. Estimativa de Preço na sua região: <strong>R$ 70 — R$ 110</strong>.";
+      } else if (lower.includes('guarda') || lower.includes('móvel') || lower.includes('montar')) {
+        aiText.innerHTML = "Identificado: <strong>Montagem de Móveis</strong>. Recomendação: Pergunte se o móvel está desarmado e na caixa!";
+      } else if (lower.includes('limpeza') || lower.includes('faxina')) {
+        aiText.innerHTML = "Identificado: <strong>Serviços de Limpeza</strong>. Média da região: <strong>R$ 100 — R$ 160 / diária</strong>.";
+      } else {
+        aiText.innerHTML = "Processando com IA... Sugestão: Defina a urgência e adicione fotos para atrair os melhores pre
