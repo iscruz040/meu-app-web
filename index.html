@@ -3,39 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meu Primeiro App</title>
-  <link rel="manifest" href="manifest.json">
+  <title>ProTrading Crypto Demo</title>
+  <link rel="manifest" href="/manifest.json">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: block;
-      text-align: center;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 50px 20px;
-    }
-    h1 { color: #333; }
-    p { color: #666; font-size: 18px; }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      font-size: 16px;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #12161c; color: #eceff1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    header { background-color: #1e2329; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2b313a; }
+    .logo { font-size: 1.2rem; font-weight: bold; color: #f0b90b; display: flex; align-items: center; gap: 8px; }
+    .balance-card { background-color: #2b313a; padding: 6px 12px; border-radius: 6px; text-align: right; }
+    .balance-title { font-size: 0.7rem; color: #848e9c; }
+    .balance-value { font-size: 1rem; font-weight: bold; color: #0ecb81; }
+    
+    .top-bar { background-color: #181a20; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2b313a; }
+    select { background-color: #2b313a; color: white; border: 1px solid #474d57; padding: 8px; border-radius: 4px; font-size: 0.9rem; outline: none; }
+    .btn-config { background: #474d57; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
+    #chart-container { flex: 1; width: 100%; background: #12161c; }
+
+    .trading-panel { background: #1e2329; padding: 12px; display: flex; gap: 10px; border-top: 1px solid #2b313a; }
+    .input-group { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .input-group label { font-size: 0.75rem; color: #848e9c; }
+    .input-group input { background: #2b313a; border: 1px solid #474d57; color: white; padding: 8px; border-radius: 4px; font-size: 0.9rem; }
+    .btn-buy { background-color: #0ecb81; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 1rem; }
+    .btn-sell { background-color: #f6465d; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 1rem; }
+
+    .history { background: #181a20; height: 120px; overflow-y: auto; padding: 8px; border-top: 1px solid #2b313a; font-size: 0.8rem; }
+    .trade-item { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #2b313a; }
+    .green { color: #0ecb81; }
+    .red { color: #f6465d; }
   </style>
 </head>
 <body>
-  <h1>Meu Aplicativo Web</h1>
-  <p>Bem-vindo ao meu primeiro app para a Play Store!</p>
-  <button onclick="alert('Funciona perfeitamente!')">Clique Aqui</button>
 
+  <header>
+    <div class="logo">⚡ ProTrading</div>
+    <div class="balance-card">
+      <div class="balance-title">CONTA DEMO</div>
+      <div class="balance-value" id="user-balance">R$ 1.000,00</div>
+    </div>
+  </header>
+
+  <div class="top-bar">
+    <select id="asset-select" onchange="changeAsset()">
+      <option value="BINANCE:BTCUSDT">Bitcoin (BTC/USDT)</option>
+      <option value="BINANCE:ETHUSDT">Ethereum (ETH/USDT)</option>
+      <option value="BINANCE:SOLUSDT">Solana (SOL/USDT)</option>
+      <option value="BINANCE:BNBUSDT">BNB (BNB/USDT)</option>
+      <option value="BINANCE:XRPUSDT">XRP (XRP/USDT)</option>
+      <option value="BINANCE:DOGEUSDT">Dogecoin (DOGE/USDT)</option>
+      <option value="BINANCE:ADAUSDT">Cardano (ADA/USDT)</option>
+      <option value="BINANCE:AVAXUSDT">Avalanche (AVAX/USDT)</option>
+    </select>
+    <button class="btn-config" onclick="configureBalance()">⚙️ Ajustar Saldo</button>
+  </div>
+
+  <div id="chart-container"></div>
+
+  <div class="trading-panel">
+    <div class="input-group">
+      <label>Valor da Ordem (R$)</label>
+      <input type="number" id="trade-amount" value="100" min="10">
+    </div>
+    <button class="btn-buy" onclick="executeTrade('COMPRA')">COMPRAR</button>
+    <button class="btn-sell" onclick="executeTrade('VENDA')">VENDER</button>
+  </div>
+
+  <div class="history" id="trade-history">
+    <div style="color: #848e9c; text-align: center;">Histórico de Ordens Simulado</div>
+  </div>
+
+  <script src="https://s3.tradingview.com/tv.js"></script>
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
+    let balance = parseFloat(localStorage.getItem('trading_balance')) || 1000.00;
+    let widget;
+
+    function updateBalanceDisplay() {
+      document.getElementById('user-balance').innerText = `R$ ${balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+      localStorage.setItem('trading_balance', balance);
     }
+
+    function loadChart(symbol) {
+      document.getElementById('chart-container').innerHTML = '';
+      widget = new TradingView.widget({
+        "autosize": true,
+        "symbol": symbol,
+        "interval": "1",
+        "timezone": "America/Sao_Paulo",
+        "theme": "dark",
+        "style": "1",
+        "locale": "br",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "hide_top_toolbar": false,
+        "container_id": "chart-container"
+      });
+    }
+
+    function changeAsset() {
+      const selectedSymbol = document.getElementById('asset-select').value;
+      loadChart(selectedSymbol);
+    }
+
+    function configureBalance() {
+      const newBal = prompt("Digite o novo saldo da conta Demo (R$):", balance);
+      if (newBal !== null && !isNaN(newBal) && newBal > 0) {
+        balance = parseFloat(newBal);
+        updateBalanceDisplay();
+      }
+    }
+
+    function executeTrade(type) {
+      const amount = parseFloat(document.getElementById('trade-amount').value);
+      if (isNaN(amount) || amount <= 0) {
+        alert("Insira um valor válido para a ordem!");
+        return;
+      }
+      if (amount > balance) {
+        alert("Saldo insuficiente na conta Demo!");
+        return;
+      }
+
+      balance -= amount;
+      
+      // Simulação simples de resultado da operação (+50% ou -40%)
+      const win = Math.random() > 0.45;
+      const profitLoss = win ? amount * 1.8 : 0;
+      balance += profitLoss;
+
+      updateBalanceDisplay();
+
+      const history = document.getElementById('trade-history');
+      const asset = document.getElementById('asset-select').selectedOptions[0].text;
+      const resultText = win ? `+R$ ${(amount * 0.8).toFixed(2)} (Lucro)` : `-R$ ${amount.toFixed(2)} (Perda)`;
+      const resultClass = win ? 'green' : 'red';
+
+      const tradeItem = document.createElement('div');
+      tradeItem.className = 'trade-item';
+      tradeItem.innerHTML = `
+        <span>${type} - ${asset}</span>
+        <span class="${resultClass}">${resultText}</span>
+      `;
+      history.prepend(tradeItem);
+    }
+
+    // Inicialização
+    updateBalanceDisplay();
+    loadChart("BINANCE:BTCUSDT");
   </script>
 </body>
 </html>
