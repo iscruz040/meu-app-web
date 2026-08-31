@@ -3,43 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProTrading OTC & Signals</title>
+  <title>ProTrading Bullex Style OTC</title>
   <link rel="manifest" href="/manifest.json">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #12161c; color: #eceff1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #0e1217; color: #eceff1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
     
-    header { background-color: #1e2329; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2b313a; }
-    .logo { font-size: 1.1rem; font-weight: bold; color: #f0b90b; display: flex; align-items: center; gap: 6px; }
-    .balance-card { background-color: #2b313a; padding: 4px 10px; border-radius: 6px; text-align: right; }
-    .balance-title { font-size: 0.65rem; color: #848e9c; }
-    .balance-value { font-size: 0.95rem; font-weight: bold; color: #0ecb81; }
+    header { background-color: #171d25; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #262e3b; }
+    .logo { font-size: 1rem; font-weight: bold; color: #f0b90b; }
+    .balance-card { background-color: #202833; padding: 4px 10px; border-radius: 6px; text-align: right; }
+    .balance-title { font-size: 0.6rem; color: #848e9c; }
+    .balance-value { font-size: 0.9rem; font-weight: bold; color: #0ecb81; }
 
-    .top-bar { background-color: #181a20; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2b313a; gap: 8px; }
-    select { background-color: #2b313a; color: white; border: 1px solid #474d57; padding: 6px; border-radius: 4px; font-size: 0.85rem; outline: none; flex: 1; }
-    .btn-config { background: #474d57; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
-
-    /* Painel de Sinal de Indicador */
-    .signal-card { background: #1e2329; padding: 10px 14px; border-bottom: 1px solid #2b313a; display: flex; justify-content: space-between; align-items: center; }
-    .signal-info { display: flex; flex-direction: column; }
-    .signal-title { font-size: 0.7rem; color: #848e9c; text-transform: uppercase; }
-    .signal-status { font-size: 1.1rem; font-weight: bold; margin-top: 2px; }
+    /* Barra Superior de Opções */
+    .top-bar { background-color: #131722; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #262e3b; gap: 6px; }
+    select { background-color: #202833; color: white; border: 1px solid #364254; padding: 5px; border-radius: 4px; font-size: 0.8rem; outline: none; }
+    
+    .timer-badge { background: #202833; padding: 4px 8px; border-radius: 4px; border: 1px solid #364254; display: flex; align-items: center; gap: 5px; font-size: 0.75rem; color: #f0b90b; }
+    
+    /* Painel de Sinais */
+    .signal-card { background: #171d25; padding: 6px 12px; border-bottom: 1px solid #262e3b; display: flex; justify-content: space-between; align-items: center; }
+    .signal-title { font-size: 0.65rem; color: #848e9c; }
+    .signal-status { font-size: 0.9rem; font-weight: bold; }
     .signal-buy { color: #0ecb81; }
     .signal-sell { color: #f6465d; }
     .signal-neutral { color: #f0b90b; }
-    .signal-strength { font-size: 0.75rem; color: #848e9c; background: #2b313a; padding: 4px 8px; border-radius: 12px; }
 
-    #chart-container { flex: 1; width: 100%; background: #12161c; }
+    #chart-container { flex: 1; width: 100%; background: #0e1217; }
 
-    .trading-panel { background: #1e2329; padding: 10px; display: flex; gap: 8px; border-top: 1px solid #2b313a; }
+    /* Posições Ativas */
+    .positions-panel { background: #131722; max-height: 90px; overflow-y: auto; border-top: 1px solid #262e3b; padding: 4px 8px; font-size: 0.75rem; }
+    .position-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #202833; }
+
+    /* Painel de Operação */
+    .trading-panel { background: #171d25; padding: 8px 12px; display: flex; gap: 8px; border-top: 1px solid #262e3b; align-items: center; }
     .input-group { flex: 1; display: flex; flex-direction: column; gap: 2px; }
-    .input-group label { font-size: 0.7rem; color: #848e9c; }
-    .input-group input { background: #2b313a; border: 1px solid #474d57; color: white; padding: 6px; border-radius: 4px; font-size: 0.85rem; }
-    .btn-buy { background-color: #0ecb81; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 0.95rem; }
-    .btn-sell { background-color: #f6465d; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 0.95rem; }
+    .input-group label { font-size: 0.65rem; color: #848e9c; }
+    .input-group input, .input-group select { background: #202833; border: 1px solid #364254; color: white; padding: 6px; border-radius: 4px; font-size: 0.8rem; }
+    
+    .btn-buy { background-color: #0ecb81; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 0.9rem; }
+    .btn-sell { background-color: #f6465d; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 4px; flex: 1; cursor: pointer; font-size: 0.9rem; }
 
-    .history { background: #181a20; height: 100px; overflow-y: auto; padding: 6px; border-top: 1px solid #2b313a; font-size: 0.75rem; }
-    .trade-item { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #2b313a; }
     .green { color: #0ecb81; }
     .red { color: #f6465d; }
   </style>
@@ -47,7 +51,7 @@
 <body>
 
   <header>
-    <div class="logo">⚡ OTC Pro Signals</div>
+    <div class="logo">⚡ Bullex OTC Pro</div>
     <div class="balance-card">
       <div class="balance-title">CONTA DEMO</div>
       <div class="balance-value" id="user-balance">R$ 1.000,00</div>
@@ -60,38 +64,52 @@
       <option value="BINANCE:ETHUSDT">ETH/USD (OTC)</option>
       <option value="BINANCE:SOLUSDT">SOL/USD (OTC)</option>
       <option value="FX:EURUSD">EUR/USD (OTC)</option>
-      <option value="FX:GBPUSD">GBP/USD (OTC)</option>
     </select>
-    <button class="btn-config" onclick="configureBalance()">⚙️ Saldo</button>
+    
+    <div class="timer-badge">
+      <span>⏱️ Vela:</span>
+      <strong id="candle-clock">00:00</strong>
+    </div>
+
+    <button style="background:#202833; color:white; border:1px solid #364254; padding:4px 8px; border-radius:4px; font-size:0.7rem;" onclick="configureBalance()">⚙️ Saldo</button>
   </div>
 
   <div class="signal-card">
-    <div class="signal-info">
-      <span class="signal-title">Indicador de Sinal (Análise IA)</span>
-      <span class="signal-status signal-neutral" id="signal-text">ANALISANDO...</span>
+    <div>
+      <div class="signal-title">SINAL IA</div>
+      <div class="signal-status signal-neutral" id="signal-text">ANALISANDO...</div>
     </div>
-    <div class="signal-strength" id="signal-accuracy">Força: --%</div>
+    <div style="font-size:0.75rem; color:#848e9c;" id="signal-accuracy">Força: --%</div>
   </div>
 
   <div id="chart-container"></div>
 
+  <div class="positions-panel" id="positions-list">
+    <div style="color: #848e9c; text-align: center; font-size: 0.7rem;">Nenhuma posição aberta no momento</div>
+  </div>
+
   <div class="trading-panel">
+    <div class="input-group" style="max-width: 80px;">
+      <label>Timeframe</label>
+      <select id="timeframe-select" onchange="changeAsset()">
+        <option value="1">1 Min</option>
+        <option value="5">5 Min</option>
+      </select>
+    </div>
+
     <div class="input-group">
       <label>Valor (R$)</label>
       <input type="number" id="trade-amount" value="100" min="10">
     </div>
-    <button class="btn-buy" onclick="executeTrade('COMPRA')">COMPRAR</button>
-    <button class="btn-sell" onclick="executeTrade('VENDA')">VENDER</button>
-  </div>
 
-  <div class="history" id="trade-history">
-    <div style="color: #848e9c; text-align: center;">Histórico de Ordens</div>
+    <button class="btn-buy" onclick="executeTrade('COMPRA')">▲ CALL</button>
+    <button class="btn-sell" onclick="executeTrade('VENDA')">▼ PUT</button>
   </div>
 
   <script src="https://s3.tradingview.com/tv.js"></script>
   <script>
     let balance = parseFloat(localStorage.getItem('trading_balance')) || 1000.00;
-    let widget;
+    let activePositions = [];
     let currentSignal = 'NEUTRO';
 
     function updateBalanceDisplay() {
@@ -99,12 +117,14 @@
       localStorage.setItem('trading_balance', balance);
     }
 
-    function loadChart(symbol) {
+    function loadChart() {
+      const symbol = document.getElementById('asset-select').value;
+      const tf = document.getElementById('timeframe-select').value;
       document.getElementById('chart-container').innerHTML = '';
-      widget = new TradingView.widget({
+      new TradingView.widget({
         "autosize": true,
         "symbol": symbol,
-        "interval": "1",
+        "interval": tf,
         "timezone": "America/Sao_Paulo",
         "theme": "dark",
         "style": "1",
@@ -113,86 +133,141 @@
         "hide_top_toolbar": false,
         "container_id": "chart-container"
       });
-      generateNewSignal();
     }
 
+    /* Lógica do Relógio e Expiração Bullex */
+    function updateCandleClock() {
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const tfMinutes = parseInt(document.getElementById('timeframe-select').value);
+      const tfSeconds = tfMinutes * 60;
+      
+      const currentMinSec = (now.getMinutes() % tfMinutes) * 60 + seconds;
+      const remainingSeconds = tfSeconds - currentMinSec;
+
+      const m = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
+      const s = (remainingSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('candle-clock').innerText = `${m}:${s}`;
+
+      updatePositions(remainingSeconds);
+    }
+
+    setInterval(updateCandleClock, 1000);
+
+    /* Executar Operação */
+    function executeTrade(type) {
+      const amount = parseFloat(document.getElementById('trade-amount').value);
+      if (isNaN(amount) || amount <= 0) return alert("Insira um valor válido!");
+      if (amount > balance) return alert("Saldo insuficiente!");
+
+      balance -= amount;
+      updateBalanceDisplay();
+
+      const tfMinutes = parseInt(document.getElementById('timeframe-select').value);
+      const tfSeconds = tfMinutes * 60;
+      const halfTime = tfSeconds / 2;
+
+      const now = new Date();
+      const currentMinSec = (now.getMinutes() % tfMinutes) * 60 + now.getSeconds();
+      const remainingCurrentCandle = tfSeconds - currentMinSec;
+
+      // Se faltar mais da metade da vela: expira no fim da vela atual.
+      // Se faltar menos da metade: expira no fim da PRÓXIMA vela.
+      let totalDuration = 0;
+      if (remainingCurrentCandle >= halfTime) {
+        totalDuration = remainingCurrentCandle;
+      } else {
+        totalDuration = remainingCurrentCandle + tfSeconds;
+      }
+
+      const asset = document.getElementById('asset-select').selectedOptions[0].text;
+
+      const position = {
+        id: Date.now(),
+        asset: asset,
+        type: type,
+        amount: amount,
+        timeLeft: totalDuration,
+        targetSignal: currentSignal
+      };
+
+      activePositions.push(position);
+      renderPositions();
+    }
+
+    /* Atualizar Posições Ativas */
+    function updatePositions(candleRemainingSec) {
+      if (activePositions.length === 0) return;
+
+      activePositions.forEach((pos, index) => {
+        pos.timeLeft--;
+
+        if (pos.timeLeft <= 0) {
+          // Fechamento da ordem
+          const win = pos.type === pos.targetSignal ? Math.random() < 0.75 : Math.random() < 0.30;
+          if (win) {
+            const profit = pos.amount * 1.85;
+            balance += profit;
+            updateBalanceDisplay();
+          }
+          activePositions.splice(index, 1);
+        }
+      });
+
+      renderPositions();
+    }
+
+    function renderPositions() {
+      const container = document.getElementById('positions-list');
+      if (activePositions.length === 0) {
+        container.innerHTML = '<div style="color: #848e9c; text-align: center; font-size: 0.7rem;">Nenhuma posição aberta</div>';
+        return;
+      }
+
+      container.innerHTML = activePositions.map(pos => `
+        <div class="position-item">
+          <span>${pos.type === 'COMPRA' ? '▲ CALL' : '▼ PUT'} - ${pos.asset}</span>
+          <span>R$ ${pos.amount.toFixed(2)}</span>
+          <span style="color: #f0b90b;">⏱️ ${pos.timeLeft}s</span>
+        </div>
+      `).join('');
+    }
+
+    /* Sistema de Sinais */
     function generateNewSignal() {
       const signals = [
         { text: '🟢 FORTE COMPRA', class: 'signal-buy', type: 'COMPRA', minAcc: 82, maxAcc: 97 },
         { text: '🔴 FORTE VENDA', class: 'signal-sell', type: 'VENDA', minAcc: 80, maxAcc: 96 },
-        { text: '⚪ NEUTRO (AGUARDE)', class: 'signal-neutral', type: 'NEUTRO', minAcc: 50, maxAcc: 65 }
+        { text: '⚪ NEUTRO', class: 'signal-neutral', type: 'NEUTRO', minAcc: 50, maxAcc: 65 }
       ];
-
       const chosen = signals[Math.floor(Math.random() * signals.length)];
       const accuracy = Math.floor(Math.random() * (chosen.maxAcc - chosen.minAcc + 1)) + chosen.minAcc;
 
-      const signalTextEl = document.getElementById('signal-text');
-      signalTextEl.innerText = chosen.text;
-      signalTextEl.className = `signal-status ${chosen.class}`;
-      
+      const el = document.getElementById('signal-text');
+      el.innerText = chosen.text;
+      el.className = `signal-status ${chosen.class}`;
       document.getElementById('signal-accuracy').innerText = `Força: ${accuracy}%`;
       currentSignal = chosen.type;
     }
 
-    // Atualiza o sinal automaticamente a cada 10 segundos
-    setInterval(generateNewSignal, 10000);
+    setInterval(generateNewSignal, 12000);
 
     function changeAsset() {
-      const selectedSymbol = document.getElementById('asset-select').value;
-      loadChart(selectedSymbol);
+      loadChart();
     }
 
     function configureBalance() {
-      const newBal = prompt("Digite o novo saldo da conta Demo (R$):", balance);
-      if (newBal !== null && !isNaN(newBal) && newBal > 0) {
+      const newBal = prompt("Novo saldo demo (R$):", balance);
+      if (newBal && !isNaN(newBal) && newBal > 0) {
         balance = parseFloat(newBal);
         updateBalanceDisplay();
       }
     }
 
-    function executeTrade(type) {
-      const amount = parseFloat(document.getElementById('trade-amount').value);
-      if (isNaN(amount) || amount <= 0) {
-        alert("Insira um valor válido!");
-        return;
-      }
-      if (amount > balance) {
-        alert("Saldo insuficiente!");
-        return;
-      }
-
-      balance -= amount;
-      
-      // Se seguir o sinal atual, chance de acerto é maior (75%)
-      let win = false;
-      if (type === currentSignal) {
-        win = Math.random() < 0.75;
-      } else {
-        win = Math.random() < 0.30;
-      }
-
-      const profitLoss = win ? amount * 1.85 : 0;
-      balance += profitLoss;
-
-      updateBalanceDisplay();
-
-      const history = document.getElementById('trade-history');
-      const asset = document.getElementById('asset-select').selectedOptions[0].text;
-      const resultText = win ? `+R$ ${(amount * 0.85).toFixed(2)} (Lucro)` : `-R$ ${amount.toFixed(2)} (Perda)`;
-      const resultClass = win ? 'green' : 'red';
-
-      const tradeItem = document.createElement('div');
-      tradeItem.className = 'trade-item';
-      tradeItem.innerHTML = `
-        <span>${type} - ${asset}</span>
-        <span class="${resultClass}">${resultText}</span>
-      `;
-      history.prepend(tradeItem);
-    }
-
-    // Inicialização
+    // Inicializar
     updateBalanceDisplay();
-    loadChart("BINANCE:BTCUSDT");
+    loadChart();
+    generateNewSignal();
   </script>
 </body>
 </html>
