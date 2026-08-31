@@ -1,19 +1,18 @@
 {
   "name": "Meu Aplicativo Web",
   "short_name": "MeuApp",
-  "description": "Meu primeiro aplicativo web completo para a Play Store",
+  "description": "Meu primeiro aplicativo web para a Play Store",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4f4f9",
+  "background_color": "#ffffff",
   "theme_color": "#007bff",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2583/2583344.png",
+      "src": "https://via.placeholder.com/512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
-}
 }
 
