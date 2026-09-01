@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bico Perto — Segurança & Validação</title>
+  <title>Bico Perto — Cadastro com Validação</title>
   <style>
     :root { 
       --primary: #6c5ce7; 
@@ -33,7 +33,7 @@
     .form-control:focus { border-color: var(--primary); }
 
     .preview-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-top: 8px; display: none; border: 2px solid var(--primary); }
-    .preview-doc { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; border: 1px dashed var(--border); }
+    .preview-doc { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; border: 1px dashed var(--border); }
 
     .badge-verified { background: #e8f8f5; color: #117a65; border: 1px solid #a3e4d7; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
 
@@ -59,10 +59,10 @@
       <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
     </div>
     <button class="btn" onclick="execLogin()">Entrar</button>
-    <button class="btn btn-flat" onclick="goToRegister()">Não tem conta? Cadastre-se com Segurança</button>
+    <button class="btn btn-flat" onclick="goToRegister()">Não tem conta? Cadastre-se</button>
   </div>
 
-  <!-- TELA 2: CADASTRO COMPLETO DE SEGURANÇA -->
+  <!-- TELA 2: CADASTRO -->
   <div id="screen-register" class="card hidden">
     <h3 style="margin-bottom: 12px;">🛡️ Cadastro de Segurança</h3>
     
@@ -76,18 +76,18 @@
 
     <div class="form-group">
       <label>Foto de Perfil</label>
-      <input type="file" accept="image/*" class="form-control" onchange="uploadImage(this, 'imgProfilePreview', 'photoProfile')">
+      <input type="file" accept="image/*" class="form-control" onchange="processImage(this, 'imgProfilePreview', 'photoProfile')">
       <img id="imgProfilePreview" class="preview-img">
     </div>
 
     <div class="form-group">
-      <label>Nome Completo (Conforme Documento)</label>
+      <label>Nome Completo</label>
       <input type="text" id="regName" class="form-control" placeholder="Ex: João da Silva">
     </div>
 
     <div class="form-group">
       <label>CPF (Apenas Números)</label>
-      <input type="text" id="regCpf" class="form-control" placeholder="000.000.000-00" maxlength="14" onblur="checkCpfField()">
+      <input type="text" id="regCpf" class="form-control" placeholder="000.000.000-00" maxlength="14">
     </div>
 
     <div class="form-group">
@@ -96,7 +96,7 @@
     </div>
 
     <div class="form-group">
-      <label>Número de Celular / WhatsApp (com DDD)</label>
+      <label>Número de Celular / WhatsApp</label>
       <input type="tel" id="regPhone" class="form-control" placeholder="11999998888">
     </div>
 
@@ -107,13 +107,13 @@
 
     <div class="form-group">
       <label>Foto do Documento (RG ou CNH)</label>
-      <input type="file" accept="image/*" class="form-control" onchange="uploadImage(this, 'imgDocPreview', 'photoDoc')">
+      <input type="file" accept="image/*" class="form-control" onchange="processImage(this, 'imgDocPreview', 'photoDoc')">
       <img id="imgDocPreview" class="preview-doc">
     </div>
 
     <div class="form-group">
       <label>Foto do Comprovante de Endereço</label>
-      <input type="file" accept="image/*" class="form-control" onchange="uploadImage(this, 'imgAddressPreview', 'photoAddress')">
+      <input type="file" accept="image/*" class="form-control" onchange="processImage(this, 'imgAddressPreview', 'photoAddress')">
       <img id="imgAddressPreview" class="preview-doc">
     </div>
 
@@ -126,7 +126,7 @@
     <button class="btn btn-flat" onclick="goToLogin()">Já tem conta? Fazer Login</button>
   </div>
 
-  <!-- TELA 3: ÁREA LOGADA / PAINEL -->
+  <!-- TELA 3: ÁREA LOGADA -->
   <div id="screen-app" class="card hidden">
     <div style="text-align: center; margin-bottom: 16px;">
       <img id="userAvatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
@@ -140,7 +140,7 @@
       <p><strong>Endereço:</strong> <span id="appAddressDisplay">--</span></p>
     </div>
 
-    <!-- PAINEL CLIENTE -->
+    <!-- PANEL CLIENTE -->
     <div id="clientPanel" class="hidden">
       <h4>📝 Criar Novo Bico / Pedido</h4>
       <div class="form-group" style="margin-top: 8px;">
@@ -155,7 +155,7 @@
       <div id="clientJobsList" style="margin-top:8px;"></div>
     </div>
 
-    <!-- PAINEL PRESTADOR -->
+    <!-- PANEL PRESTADOR -->
     <div id="providerPanel" class="hidden">
       <h4>📌 Bicos Disponíveis na Região</h4>
       <div id="providerJobsList" style="margin-top:8px;"></div>
@@ -165,13 +165,20 @@
   </div>
 
   <script>
-    let users = JSON.parse(localStorage.getItem('bp_users')) || [];
-    let jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
-    let activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
-
+    let users = [];
+    let jobs = [];
+    let activeUser = null;
     let tempMedia = { photoProfile: '', photoDoc: '', photoAddress: '' };
 
-    // ALGORITMO VALIDADOR DE CPF REAL
+    try {
+      users = JSON.parse(localStorage.getItem('bp_users')) || [];
+      jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
+      activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
+    } catch (e) {
+      console.log("Erro ao carregar localStorage:", e);
+    }
+
+    // VALIDADOR MATEMÁTICO DE CPF
     function isValidCPF(cpf) {
       cpf = cpf.replace(/[^\d]+/g, '');
       if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
@@ -188,25 +195,41 @@
       return true;
     }
 
-    function uploadImage(input, previewId, mediaKey) {
+    // COMPRESSOR DE IMAGENS (Para não travar o celular)
+    function processImage(input, previewId, mediaKey) {
       const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          tempMedia[mediaKey] = e.target.result;
-          const img = document.getElementById(previewId);
-          img.src = e.target.result;
-          img.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    }
+      if (!file) return;
 
-    function checkCpfField() {
-      const cpf = document.getElementById('regCpf').value;
-      if (cpf && !isValidCPF(cpf)) {
-        alert("❌ CPF Inválido ou Inexistente! Por favor, digite um CPF válido.");
-      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const maxDim = 400; // Reduz para tamanho leve
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxDim) { height *= maxDim / width; width = maxDim; }
+          } else {
+            if (height > maxDim) { width *= maxDim / height; height = maxDim; }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedData = canvas.toDataURL('image/jpeg', 0.6); // Compressão leve em JPEG
+          tempMedia[mediaKey] = compressedData;
+
+          const previewEl = document.getElementById(previewId);
+          previewEl.src = compressedData;
+          previewEl.style.display = 'block';
+        };
+      };
+      reader.readAsDataURL(file);
     }
 
     function goToRegister() {
@@ -221,27 +244,22 @@
 
     function execRegister() {
       const type = document.getElementById('regType').value;
-      const name = document.getElementById('regName').value;
+      const name = document.getElementById('regName').value.trim();
       const cpf = document.getElementById('regCpf').value.replace(/\D/g, '');
-      const address = document.getElementById('regAddress').value;
-      const phone = document.getElementById('regPhone').value;
-      const email = document.getElementById('regEmail').value;
+      const address = document.getElementById('regAddress').value.trim();
+      const phone = document.getElementById('regPhone').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
       const pass = document.getElementById('regPass').value;
 
-      if (!isValidCPF(cpf)) {
-        alert("❌ Cadastro Bloqueado: O CPF digitado é inválido ou temporário!");
-        return;
-      }
+      if (!name) return alert("⚠️ Digite seu Nome Completo.");
+      if (!cpf || !isValidCPF(cpf)) return alert("❌ Digite um CPF Válido!");
+      if (!address) return alert("⚠️ Preencha seu Endereço.");
+      if (!phone) return alert("⚠️ Digite seu número de Celular.");
+      if (!email) return alert("⚠️ Digite seu E-mail.");
+      if (!pass) return alert("⚠️ Crie uma Senha.");
 
-      if (!name || !address || !phone || !email || !pass) {
-        alert("⚠️ Por favor, preencha todos os campos obrigatórios.");
-        return;
-      }
-
-      if (!tempMedia.photoDoc || !tempMedia.photoAddress) {
-        alert("⚠️ Envie a foto do Documento e do Comprovante de Endereço para verificação de segurança.");
-        return;
-      }
+      if (!tempMedia.photoDoc) return alert("⚠️ Tire/Envie a foto do seu Documento (RG/CNH).");
+      if (!tempMedia.photoAddress) return alert("⚠️ Tire/Envie a foto do seu Comprovante de Endereço.");
 
       const newUser = {
         id: Date.now(),
@@ -252,14 +270,18 @@
         verified: true
       };
 
-      users.push(newUser);
-      localStorage.setItem('bp_users', JSON.stringify(users));
+      try {
+        users.push(newUser);
+        localStorage.setItem('bp_users', JSON.stringify(users));
+        
+        activeUser = newUser;
+        localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
 
-      activeUser = newUser;
-      localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
-
-      alert("✅ Cadastro realizado e CPF Verificado com Sucesso!");
-      checkAuth();
+        alert("✅ Cadastro verificado e conta criada com sucesso!");
+        checkAuth();
+      } catch (err) {
+        alert("❌ Erro ao salvar dados. Fotos muito grandes, tente novamente.");
+      }
     }
 
     function execLogin() {
@@ -272,7 +294,7 @@
         localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
         checkAuth();
       } else {
-        alert("❌ Dados incorretos ou conta não encontrada.");
+        alert("❌ Usuário/CPF ou senha incorretos.");
       }
     }
 
