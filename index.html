@@ -3,61 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bico Perto — Sistema Completo</title>
+  <title>Bico Perto</title>
   <style>
-    :root { 
-      --primary: #6c5ce7; 
-      --secondary: #00b894; 
-      --bg: #f8f9fa; 
-      --card: #ffffff; 
-      --text: #2d3436; 
-      --border: #dfe6e9;
-      --danger: #d63031;
-      --warning: #fdcb6e;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 500px; margin: 0 auto; padding-bottom: 40px; }
-    
-    header { text-align: center; margin-bottom: 16px; }
-    header h1 { color: var(--primary); font-size: 1.5rem; }
-
-    .card { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-    .btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 8px; cursor: pointer; font-size: 0.9rem; }
-    .btn-sec { background: var(--secondary); }
-    .btn-warn { background: var(--warning); color: #2d3436; }
-    .btn-danger { background: var(--danger); }
+    :root { --primary: #6c5ce7; --secondary: #00b894; --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; --border: #dfe6e9; --danger: #d63031; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 500px; margin: 0 auto; }
+    .card { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); }
+    .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 8px; cursor: pointer; }
     .btn-flat { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
-    
-    .btn-group { display: flex; gap: 6px; margin-top: 8px; }
-    .btn-group button { flex: 1; padding: 8px 4px; font-size: 0.8rem; }
-
+    .btn-danger { background: var(--danger); }
     .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #2d3436; }
-    .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.88rem; outline: none; }
-
-    .preview-img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; margin-top: 8px; display: none; border: 2px solid var(--primary); }
-    .preview-doc { width: 100%; height: 90px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; border: 1px dashed var(--border); }
-
-    .badge-verified { background: #e8f8f5; color: #117a65; border: 1px solid #a3e4d7; padding: 2px 6px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
-    .stars { color: #f1c40f; font-weight: bold; font-size: 0.85rem; }
-
-    .job-card { background: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 12px; }
-    .chat-box { background: #f1f2f6; border-radius: 8px; padding: 8px; max-height: 150px; overflow-y: auto; margin-top: 8px; font-size: 0.85rem; }
-    .chat-msg { background: #fff; padding: 6px; border-radius: 6px; margin-bottom: 4px; border: 1px solid #e4e4e4; }
-
+    .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; }
+    .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>📍 Bico Perto</h1>
+  <header style="text-align:center; margin-bottom:16px;">
+    <h1 style="color:var(--primary);">📍 Bico Perto</h1>
   </header>
 
-  <!-- TELA 1: LOGIN -->
+  <!-- LOGIN -->
   <div id="screen-login" class="card">
-    <h3 style="margin-bottom: 12px;">🔑 Entrar na Conta</h3>
-    <div class="form-group">
+    <h3>🔑 Entrar na Conta</h3>
+    <div class="form-group" style="margin-top:10px;">
       <label>CPF ou E-mail</label>
       <input type="text" id="loginUser" class="form-control" placeholder="Digite seu CPF ou E-mail">
     </div>
@@ -65,407 +35,87 @@
       <label>Senha</label>
       <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
     </div>
-    <button class="btn" onclick="execLogin()">Entrar</button>
-    <button class="btn btn-flat" onclick="goToRegister()">Cadastre-se com Segurança</button>
+    <button class="btn" id="btnLogin">Entrar</button>
+    <button class="btn btn-flat" id="btnGoRegister">Cadastre-se</button>
+    <button class="btn btn-danger" id="btnReset" style="margin-top:15px; font-size:0.75rem;">⚠️ Destravar App (Resetar Dados)</button>
   </div>
 
-  <!-- TELA 2: CADASTRO -->
-  <div id="screen-register" class="card hidden">
-    <h3 style="margin-bottom: 12px;">🛡️ Cadastro de Segurança</h3>
-    
-    <div class="form-group">
-      <label>Tipo de Perfil</label>
-      <select id="regType" class="form-control">
-        <option value="client">Cliente (Quero Contratar)</option>
-        <option value="provider">Prestador (Quero Fazer Bicos)</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Foto de Perfil</label>
-      <input type="file" accept="image/*" class="form-control" onchange="processImage(this, 'imgProfilePreview', 'photoProfile')">
-      <img id="imgProfilePreview" class="preview-img">
-    </div>
-
-    <div class="form-group">
-      <label>Nome Completo</label>
-      <input type="text" id="regName" class="form-control" placeholder="Ex: João da Silva">
-    </div>
-
-    <div class="form-group">
-      <label>CPF (Apenas Números)</label>
-      <input type="text" id="regCpf" class="form-control" placeholder="000.000.000-00" maxlength="14">
-    </div>
-
-    <div class="form-group">
-      <label>Endereço Completo</label>
-      <input type="text" id="regAddress" class="form-control" placeholder="Rua, Bairro, Cidade">
-    </div>
-
-    <div class="form-group">
-      <label>Celular / WhatsApp (com DDD)</label>
-      <input type="tel" id="regPhone" class="form-control" placeholder="11999998888">
-    </div>
-
-    <div class="form-group">
-      <label>E-mail</label>
-      <input type="email" id="regEmail" class="form-control" placeholder="joao@email.com">
-    </div>
-
-    <div class="form-group">
-      <label>Foto do Documento (RG/CNH)</label>
-      <input type="file" accept="image/*" class="form-control" onchange="processImage(this, 'imgDocPreview', 'photoDoc')">
-      <img id="imgDocPreview" class="preview-doc">
-    </div>
-
-    <div class="form-group">
-      <label>Foto Comprovante de Endereço</label>
-      <input type="file" accept="image/*" class="form-control" onchange="processImage(this, 'imgAddressPreview', 'photoAddress')">
-      <img id="imgAddressPreview" class="preview-doc">
-    </div>
-
-    <div class="form-group">
-      <label>Crie uma Senha</label>
-      <input type="password" id="regPass" class="form-control" placeholder="••••••••">
-    </div>
-
-    <button class="btn btn-sec" onclick="execRegister()">Validar e Enviar Código</button>
-    <button class="btn btn-flat" onclick="goToLogin()">Já tem conta? Fazer Login</button>
-  </div>
-
-  <!-- TELA 3: VALIDAR CÓDIGO WHATSAPP -->
-  <div id="screen-sms" class="card hidden">
-    <h3>💬 Validação por WhatsApp</h3>
-    <p style="font-size:0.85rem; color:gray; margin: 8px 0;">Enviamos o código de ativação para o seu WhatsApp. Digite abaixo para confirmar:</p>
-    <div class="form-group">
-      <input type="number" id="smsInput" class="form-control" placeholder="Ex: 1234">
-    </div>
-    <button class="btn btn-sec" onclick="confirmCode()">Confirmar e Ativar Conta</button>
-  </div>
-
-  <!-- TELA 4: ÁREA LOGADA -->
+  <!-- PAINEL SIMPLES -->
   <div id="screen-app" class="card hidden">
-    <div style="text-align: center; margin-bottom: 12px;">
-      <img id="userAvatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
-      <h3 id="appWelcome" style="margin-top: 4px;">--</h3>
-      <div id="appRating" class="stars">★ 5.0</div>
-      <span class="badge-verified">✓ CPF Validado</span>
-    </div>
-
-    <div style="background:#f1f2f6; padding:10px; border-radius:8px; margin-bottom:12px; font-size:0.8rem; line-height: 1.3;">
-      <p><strong>Tipo:</strong> <span id="appProfileType">--</span></p>
-      <p><strong>CPF (Protegido):</strong> <span id="appCpfDisplay">--</span></p>
-      <p><strong>Endereço:</strong> <span id="appAddressDisplay">--</span></p>
-    </div>
-
-    <!-- PAINEL CLIENTE -->
-    <div id="clientPanel" class="hidden">
-      <h4>📝 Solicitar Novo Bico</h4>
-      <div class="form-group" style="margin-top: 8px;">
-        <input type="text" id="jobTitle" class="form-control" placeholder="O que você precisa? Ex: Pintar Sala">
-      </div>
-      <div class="form-group">
-        <label>Data e Hora Desejada:</label>
-        <input type="datetime-local" id="jobDate" class="form-control">
-      </div>
-      <div class="form-group">
-        <input type="number" id="jobPrice" class="form-control" placeholder="Valor Oferecido (R$)">
-      </div>
-      <button class="btn" onclick="publishJob()">Publicar Pedido</button>
-
-      <h4 style="margin-top:16px;">📋 Meus Pedidos</h4>
-      <div id="clientJobsList" style="margin-top:8px;"></div>
-    </div>
-
-    <!-- PAINEL PRESTADOR -->
-    <div id="providerPanel" class="hidden">
-      <h4>📌 Bicos Disponíveis</h4>
-      <div id="providerJobsList" style="margin-top:8px;"></div>
-    </div>
-
-    <button class="btn btn-danger" style="margin-top:16px;" onclick="execLogout()">🚪 Sair</button>
+    <h3>Bem-vindo, <span id="userName">--</span>!</h3>
+    <p style="margin-top:8px; font-size:0.9rem;">Você está logado no sistema.</p>
+    <button class="btn btn-danger" id="btnLogout" style="margin-top:16px;">Sair</button>
   </div>
 
   <script>
-    let users = [];
-    let jobs = [];
-    let activeUser = null;
-    let pendingUser = null;
-    let generatedPin = null;
-    let tempMedia = { photoProfile: '', photoDoc: '', photoAddress: '' };
+    // CAPTURA DE ERROS PARA NÃO TRAVAR EM BRANCO
+    window.onerror = function(msg, url, line) {
+      alert("Erro detectado: " + msg + " (Linha: " + line + ")");
+      return false;
+    };
 
-    function loadData() {
+    function safeStorageGet(key) {
       try {
-        users = JSON.parse(localStorage.getItem('bp_users')) || [];
-        jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
-        activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
+        return JSON.parse(localStorage.getItem(key)) || [];
       } catch (e) {
-        console.error("Erro no carregamento:", e);
+        console.error("Erro ao ler LocalStorage", e);
+        return [];
       }
     }
 
-    loadData();
+    document.getElementById('btnLogin').addEventListener('click', function() {
+      const userVal = document.getElementById('loginUser').value.trim();
+      const passVal = document.getElementById('loginPass').value.trim();
 
-    // MÁSCARAS DE PROTEÇÃO
-    function maskName(fullName) {
-      if (!fullName) return '';
-      const parts = fullName.trim().split(' ');
-      const firstName = parts[0];
-      const rest = parts.slice(1).map(p => p[0] + '***').join(' ');
-      return `${firstName} ${rest}`;
-    }
-
-    function maskCPF(cpf) {
-      if (!cpf) return '';
-      const clean = cpf.replace(/\D/g, '');
-      return `******${clean.slice(-5)}`;
-    }
-
-    function maskAddress(addr) {
-      if (!addr) return '';
-      const parts = addr.split(',');
-      return parts.length > 1 ? `Região: ${parts[1] || parts[0]}` : addr;
-    }
-
-    // VALIDADOR MATEMÁTICO DE CPF
-    function isValidCPF(cpf) {
-      cpf = cpf.replace(/[^\d]+/g, '');
-      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-      let add = 0;
-      for (let i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
-      let rev = 11 - (add % 11);
-      if (rev === 10 || rev === 11) rev = 0;
-      if (rev !== parseInt(cpf.charAt(9))) return false;
-      add = 0;
-      for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
-      rev = 11 - (add % 11);
-      if (rev === 10 || rev === 11) rev = 0;
-      if (rev !== parseInt(cpf.charAt(10))) return false;
-      return true;
-    }
-
-    // COMPRESSÃO DE IMAGENS
-    function processImage(input, previewId, mediaKey) {
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const img = new Image();
-        img.src = e.target.result;
-        img.onload = function() {
-          const canvas = document.createElement('canvas');
-          const maxDim = 300;
-          let w = img.width, h = img.height;
-          if (w > h) { if (w > maxDim) { h *= maxDim / w; w = maxDim; } }
-          else { if (h > maxDim) { w *= maxDim / h; h = maxDim; } }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const compressed = canvas.toDataURL('image/jpeg', 0.4);
-          tempMedia[mediaKey] = compressed;
-          const previewEl = document.getElementById(previewId);
-          previewEl.src = compressed; previewEl.style.display = 'block';
-        };
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function goToRegister() {
-      document.getElementById('screen-login').classList.add('hidden');
-      document.getElementById('screen-register').classList.remove('hidden');
-    }
-
-    function goToLogin() {
-      document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-sms').classList.add('hidden');
-      document.getElementById('screen-login').classList.remove('hidden');
-    }
-
-    // CADASTRO
-    function execRegister() {
-      const type = document.getElementById('regType').value;
-      const name = document.getElementById('regName').value.trim();
-      const cpf = document.getElementById('regCpf').value.replace(/\D/g, '');
-      const address = document.getElementById('regAddress').value.trim();
-      const phone = document.getElementById('regPhone').value.replace(/\D/g, '');
-      const email = document.getElementById('regEmail').value.trim();
-      const pass = document.getElementById('regPass').value;
-
-      if (!name) return alert("⚠️ Digite seu Nome Completo.");
-      if (!cpf || !isValidCPF(cpf)) return alert("❌ Digite um CPF Válido!");
-      if (!address) return alert("⚠️ Preencha seu Endereço.");
-      if (!phone) return alert("⚠️ Digite seu Celular/WhatsApp.");
-      if (!email) return alert("⚠️ Digite seu E-mail.");
-      if (!pass) return alert("⚠️ Crie uma Senha.");
-      if (!tempMedia.photoDoc || !tempMedia.photoAddress) return alert("⚠️ Envie as fotos de Documento e Comprovante.");
-
-      generatedPin = Math.floor(1000 + Math.random() * 9000);
-      pendingUser = {
-        id: Date.now(), type, name, cpf, address, phone, email, pass,
-        profileImg: tempMedia.photoProfile || 'https://via.placeholder.com/80',
-        docImg: tempMedia.photoDoc, addressImg: tempMedia.photoAddress,
-        rating: 5.0, ratingsCount: 0
-      };
-
-      document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-sms').classList.remove('hidden');
-
-      const msg = encodeURIComponent(`Olá ${name}! Seu código de verificação do Bico Perto é: ${generatedPin}`);
-      window.open(`https://wa.me/55${phone}?text=${msg}`, '_blank');
-    }
-
-    function confirmCode() {
-      const inputPin = document.getElementById('smsInput').value;
-      if (inputPin == generatedPin) {
-        users.push(pendingUser);
-        localStorage.setItem('bp_users', JSON.stringify(users));
-        activeUser = pendingUser;
-        localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
-        alert("✅ Telefone confirmado e conta ativada!");
-        checkAuth();
-      } else {
-        alert("❌ Código incorreto!");
+      if (!userVal || !passVal) {
+        alert("Por favor, preencha o usuário/CPF e a senha.");
+        return;
       }
-    }
 
-    // LOGIN CORRIGIDO
-    function execLogin() {
-      loadData();
-      const rawInput = document.getElementById('loginUser').value.trim();
-      const cleanCpfInput = rawInput.replace(/\D/g, '');
-      const pass = document.getElementById('loginPass').value;
+      const users = safeStorageGet('bp_users');
+      const cleanInput = userVal.replace(/\D/g, '');
 
-      if (!rawInput || !pass) return alert("⚠️ Preencha usuário/CPF e senha!");
+      // Se não houver usuários cadastrados no navegador
+      if (users.length === 0) {
+        alert("Nenhum usuário cadastrado neste navegador ainda! Clique em 'Cadastre-se'.");
+        return;
+      }
 
       const found = users.find(u => {
-        const uCpfClean = u.cpf ? u.cpf.replace(/\D/g, '') : '';
-        const isCpfMatch = cleanCpfInput.length > 0 && uCpfClean === cleanCpfInput;
-        const isEmailMatch = u.email && u.email.toLowerCase() === rawInput.toLowerCase();
-        return (isCpfMatch || isEmailMatch) && u.pass === pass;
+        const cleanCpf = u.cpf ? u.cpf.replace(/\D/g, '') : '';
+        const matchCpf = cleanInput && cleanCpf === cleanInput;
+        const matchEmail = u.email && u.email.toLowerCase() === userVal.toLowerCase();
+        return (matchCpf || matchEmail) && u.pass === passVal;
       });
 
       if (found) {
-        activeUser = found;
-        localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
-        checkAuth();
+        localStorage.setItem('bp_active', JSON.stringify(found));
+        showApp(found);
       } else {
-        alert("❌ CPF/E-mail ou senha incorretos! Se você ainda não concluiu o cadastro com o código do WhatsApp, cadastre-se novamente.");
+        alert("CPF/E-mail ou senha incorretos.");
       }
+    });
+
+    document.getElementById('btnReset').addEventListener('click', function() {
+      localStorage.clear();
+      alert("Cache limpo! Tente navegar novamente.");
+      location.reload();
+    });
+
+    function showApp(user) {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-app').classList.remove('hidden');
+      document.getElementById('userName').innerText = user.name || 'Usuário';
     }
 
-    function execLogout() {
-      activeUser = null;
-      localStorage.removeItem('bp_active_user');
-      checkAuth();
-    }
+    // VERIFICA LOGIN AO CARREGAR
+    (function checkSession() {
+      try {
+        const active = JSON.parse(localStorage.getItem('bp_active'));
+        if (active) showApp(active);
+      } catch(e) {}
+    })();
+  </script>
+</body>
+</html>
 
-    // BICOS & PROPOSTAS
-    function publishJob() {
-      const title = document.getElementById('jobTitle').value.trim();
-      const date = document.getElementById('jobDate').value;
-      const price = document.getElementById('jobPrice').value;
-
-      if (!title || !date) return alert("Preencha o título e a data/hora!");
-
-      jobs.unshift({
-        id: Date.now(),
-        clientId: activeUser.id,
-        clientName: activeUser.name,
-        clientCpf: activeUser.cpf,
-        clientAddr: activeUser.address,
-        clientPhone: activeUser.phone,
-        clientRating: activeUser.rating || 5.0,
-        title, date, price,
-        status: 'open',
-        providerId: null,
-        providerName: null,
-        chat: []
-      });
-
-      localStorage.setItem('bp_jobs', JSON.stringify(jobs));
-      document.getElementById('jobTitle').value = '';
-      document.getElementById('jobDate').value = '';
-      document.getElementById('jobPrice').value = '';
-      renderJobs();
-    }
-
-    function handleJob(jobId, action) {
-      const job = jobs.find(j => j.id === jobId);
-      if (!job) return;
-
-      if (action === 'refuse') {
-        job.status = 'refused';
-      } else if (action === 'accept') {
-        job.status = 'accepted';
-        job.providerId = activeUser.id;
-        job.providerName = activeUser.name;
-        job.providerCpf = activeUser.cpf;
-        job.providerPhone = activeUser.phone;
-        job.providerRating = activeUser.rating || 5.0;
-      } else if (action === 'negotiate') {
-        job.status = 'negotiating';
-        job.providerId = activeUser.id;
-        job.providerName = activeUser.name;
-      }
-
-      localStorage.setItem('bp_jobs', JSON.stringify(jobs));
-      renderJobs();
-    }
-
-    function sendChat(jobId, inputId) {
-      const text = document.getElementById(inputId).value.trim();
-      if (!text) return;
-      const job = jobs.find(j => j.id === jobId);
-      if (job) {
-        job.chat.push({ sender: activeUser.name, text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-        localStorage.setItem('bp_jobs', JSON.stringify(jobs));
-        renderJobs();
-      }
-    }
-
-    function rateUser(userId, stars) {
-      const u = users.find(x => x.id === userId);
-      if (u) {
-        const total = (u.rating * (u.ratingsCount || 1)) + stars;
-        u.ratingsCount = (u.ratingsCount || 1) + 1;
-        u.rating = (total / u.ratingsCount).toFixed(1);
-        localStorage.setItem('bp_users', JSON.stringify(users));
-        alert("✅ Avaliação enviada com sucesso!");
-        renderJobs();
-      }
-    }
-
-    // RENDERIZAÇÃO DA INTERFACE
-    function renderJobs() {
-      if (activeUser.type === 'client') {
-        const myJobs = jobs.filter(j => j.clientId === activeUser.id && j.status !== 'refused');
-        document.getElementById('clientJobsList').innerHTML = myJobs.length ? myJobs.map(j => `
-          <div class="job-card">
-            <strong>${j.title}</strong> — R$ ${j.price || 'A combinar'}
-            <p style="font-size:0.75rem; color:gray; margin-top:2px;">📅 ${new Date(j.date).toLocaleString('pt-BR')}</p>
-            <p style="font-size:0.8rem; margin-top:4px;"><strong>Status:</strong> ${j.status === 'open' ? '⏳ Aguardando' : j.status === 'accepted' ? '✅ Aceito por ' + maskName(j.providerName) : '💬 Em Negociação'}</p>
-            
-            ${j.status === 'accepted' ? `
-              <div style="background:#e8f8f5; padding:8px; border-radius:6px; margin-top:6px; font-size:0.78rem;">
-                <p><strong>Prestador:</strong> ${maskName(j.providerName)} (★ ${j.providerRating})</p>
-                <p><strong>CPF:</strong> ${maskCPF(j.providerCpf)}</p>
-                <p><strong>Contato:</strong> <a href="https://wa.me/55${j.providerPhone}" target="_blank">Chamar no WhatsApp</a></p>
-              </div>
-              <div style="margin-top:6px; font-size:0.75rem;">
-                <strong>Avaliar Prestador:</strong>
-                <button onclick="rateUser(${j.providerId}, 5)">★ 5</button>
-                <button onclick="rateUser(${j.providerId}, 4)">★ 4</button>
-                <button onclick="rateUser(${j.providerId}, 3)">★ 3</button>
-              </div>
-            ` : ''}
-
-            ${j.status === 'negotiating' ? `
-              <div class="chat-box">
-                ${j.chat.map(c => `<div class="chat-msg"><strong>${maskName(c.sender)}:</strong> ${c.text} <span style="font-size:0.65rem; color:gray;">${c.time}</span></div>`).join('')}
-              </div>
-              <div style="display:flex; gap:4px; margin-top:4px;">
-                <input type="text" id="chatClient_${j.id}" class="form-control" placeholder="Mensagem...">
-                <button class="btn btn-sec" style="width: auto; margin:0;" onclick="sendChat(${j.id}, 'chatClient_${j.id}')">Enviar</button>
-              </div>
-            ` : ''}
-          </div>
-        `).join('') : '<p style="font-size:0.8rem; color:gray;">Nenhum pedido pu
