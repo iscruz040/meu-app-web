@@ -5,33 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bico Perto</title>
   <style>
-    :root { --primary: #6c5ce7; --secondary: #00b894; --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    :root { 
+      --primary: #6c5ce7; 
+      --secondary: #00b894; 
+      --bg: #f8f9fa; 
+      --card: #ffffff; 
+      --text: #2d3436; 
+      --border: #dfe6e9;
+      --danger: #d63031;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background: var(--bg); color: var(--text); padding: 16px; max-width: 500px; margin: 0 auto; }
     
-    .card { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #dfe6e9; }
-    .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 8px; cursor: pointer; }
+    header { text-align: center; margin-bottom: 20px; }
+    header h1 { color: var(--primary); font-size: 1.5rem; }
+    header p { font-size: 0.8rem; color: #636e72; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 10px; cursor: pointer; font-size: 0.95rem; }
     .btn-sec { background: var(--secondary); }
     .btn-flat { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+    .btn-danger { background: var(--danger); }
     
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; }
-    .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #2d3436; }
+    .form-control { width: 100%; padding: 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
+    .form-control:focus { border-color: var(--primary); }
 
-    /* Esconde elementos por padrão */
+    .info-box { background: #e8f8f5; border: 1px solid #a3e4d7; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #117a65; font-size: 0.85rem; text-align: center; }
+
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <h2 style="color:var(--primary); text-align:center; margin-bottom:16px;">📍 Bico Perto</h2>
+  <header>
+    <h1>📍 Bico Perto</h1>
+    <p>Tem serviço? Tem alguém perto para fazer.</p>
+  </header>
 
   <!-- TELA 1: LOGIN -->
   <div id="screen-login" class="card">
-    <h3>🔑 Entrar na Conta</h3>
-    <div class="form-group" style="margin-top:10px;">
+    <h3 style="margin-bottom: 12px;">🔑 Entrar na Conta</h3>
+    <div class="form-group">
       <label>E-mail ou Telefone</label>
-      <input type="text" id="loginUser" class="form-control" placeholder="seuemail@exemplo.com">
+      <input type="text" id="loginUser" class="form-control" placeholder="Seu e-mail ou número com DDD">
     </div>
     <div class="form-group">
       <label>Senha</label>
@@ -43,8 +61,8 @@
 
   <!-- TELA 2: CADASTRO -->
   <div id="screen-register" class="card hidden">
-    <h3>📝 Criar Conta</h3>
-    <div class="form-group" style="margin-top:10px;">
+    <h3 style="margin-bottom: 12px;">📝 Criar Conta</h3>
+    <div class="form-group">
       <label>Tipo de Conta</label>
       <select id="regType" class="form-control">
         <option value="client">Cliente (Quero Contratar)</option>
@@ -56,8 +74,8 @@
       <input type="text" id="regName" class="form-control" placeholder="Ex: Maria Silva">
     </div>
     <div class="form-group">
-      <label>Telefone / WhatsApp</label>
-      <input type="text" id="regPhone" class="form-control" placeholder="(11) 99999-8888">
+      <label>Telefone / WhatsApp (com DDD)</label>
+      <input type="tel" id="regPhone" class="form-control" placeholder="11999998888">
     </div>
     <div class="form-group">
       <label>E-mail</label>
@@ -67,26 +85,33 @@
       <label>Senha</label>
       <input type="password" id="regPass" class="form-control" placeholder="••••••••">
     </div>
-    <button class="btn btn-sec" onclick="execRegister()">Cadastrar e Enviar SMS</button>
+    <button class="btn btn-sec" onclick="execRegister()">Cadastrar e Validar Código</button>
     <button class="btn btn-flat" onclick="goToLogin()">Já tem conta? Fazer Login</button>
   </div>
 
-  <!-- TELA 3: CONFIRMAÇÃO SMS -->
+  <!-- TELA 3: CONFIRMAÇÃO DO CÓDIGO -->
   <div id="screen-sms" class="card hidden">
-    <h3>📱 Validação por SMS</h3>
-    <div id="smsCodeBox" style="background:#fff3cd; padding:10px; border-radius:6px; margin:10px 0; color:#856404; font-weight:bold; text-align:center;"></div>
-    <div class="form-group">
-      <label>Digite o código de 4 dígitos:</label>
-      <input type="number" id="smsInput" class="form-control" placeholder="1234">
+    <h3 style="margin-bottom: 10px;">💬 Validação do Número</h3>
+    <div class="info-box">
+      Enviamos o código de ativação para o WhatsApp do número informado. Digite-o abaixo para concluir:
     </div>
-    <button class="btn btn-sec" onclick="confirmSMS()">Confirmar Código</button>
+    <div class="form-group">
+      <label>Código de Verificação (4 dígitos)</label>
+      <input type="number" id="smsInput" class="form-control" placeholder="Ex: 1234">
+    </div>
+    <button class="btn btn-sec" onclick="confirmCode()">Confirmar e Entrar</button>
   </div>
 
-  <!-- TELA 4: ÁREA LOGADA -->
+  <!-- TELA 4: ÁREA DO USUÁRIO LOGADO -->
   <div id="screen-app" class="card hidden">
     <h3 id="appWelcome">Bem-vindo!</h3>
-    <p id="appUserType" style="color:gray; font-size:0.85rem; margin-bottom:12px;"></p>
-    <button class="btn btn-flat" style="border-color:#d63031; color:#d63031;" onclick="execLogout()">🚪 Sair da Conta</button>
+    <p id="appUserType" style="color:gray; font-size:0.85rem; margin-top:4px; margin-bottom:16px;"></p>
+    
+    <div style="background:#f1f2f6; padding:12px; border-radius:8px; margin-bottom:16px; font-size:0.9rem;">
+      <p>🚀 Você está conectado ao sistema do Bico Perto!</p>
+    </div>
+
+    <button class="btn btn-danger" onclick="execLogout()">🚪 Sair da Conta</button>
   </div>
 
   <script>
@@ -95,7 +120,7 @@
     let pendingUser = null;
     let generatedPin = null;
 
-    // NAVEGAÇÃO ENTRE TELAS
+    // CONTROLE DE NAVEGAÇÃO
     function goToRegister() {
       document.getElementById('screen-login').classList.add('hidden');
       document.getElementById('screen-register').classList.remove('hidden');
@@ -107,29 +132,36 @@
       document.getElementById('screen-login').classList.remove('hidden');
     }
 
-    // CADASTRO E SMS
+    // REGISTRO E ENVIO DE CÓDIGO VIA WHATSAPP
     function execRegister() {
       const name = document.getElementById('regName').value;
-      const phone = document.getElementById('regPhone').value;
+      const phoneClean = document.getElementById('regPhone').value.replace(/\D/g, '');
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
       const type = document.getElementById('regType').value;
 
-      if (!name || !phone || !pass) {
-        alert("Preencha Nome, Telefone e Senha!");
+      if (!name || !phoneClean || !pass) {
+        alert("Preencha Nome, Telefone e Senha para continuar!");
         return;
       }
 
+      // Gera PIN de 4 dígitos
       generatedPin = Math.floor(1000 + Math.random() * 9000);
-      pendingUser = { id: Date.now(), name, phone, email, pass, type };
+      pendingUser = { id: Date.now(), name, phone: phoneClean, email, pass, type };
 
+      // Exibe a tela de confirmação
       document.getElementById('screen-register').classList.add('hidden');
       document.getElementById('screen-sms').classList.remove('hidden');
-      document.getElementById('smsCodeBox').innerText = "📲 SMS Recebido: Seu código de ativação é " + generatedPin;
+
+      // Abre o WhatsApp enviando a mensagem com o código
+      const msg = encodeURIComponent(`Olá ${name}! Seu código de verificação do Bico Perto é: ${generatedPin}`);
+      window.open(`https://wa.me/55${phoneClean}?text=${msg}`, '_blank');
     }
 
-    function confirmSMS() {
+    // CONFIRMAÇÃO DO CÓDIGO
+    function confirmCode() {
       const inputPin = document.getElementById('smsInput').value;
+
       if (inputPin == generatedPin) {
         users.push(pendingUser);
         localStorage.setItem('bp_users', JSON.stringify(users));
@@ -137,25 +169,26 @@
         activeUser = pendingUser;
         localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
         
-        alert("✅ Conta criada e verificada!");
+        alert("✅ Conta criada e verificada com sucesso!");
         checkAuth();
       } else {
-        alert("❌ Código incorreto!");
+        alert("❌ Código incorreto! Verifique a mensagem e tente novamente.");
       }
     }
 
     // LOGIN E LOGOUT
     function execLogin() {
-      const login = document.getElementById('loginUser').value;
+      const login = document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value;
 
       const found = users.find(u => (u.email === login || u.phone === login) && u.pass === pass);
+      
       if (found) {
         activeUser = found;
         localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
         checkAuth();
       } else {
-        alert("Usuário ou senha inválidos! (Se não cadastrou ainda, clique em Cadastre-se)");
+        alert("Usuário ou senha incorretos! Se você ainda não possui cadastro, clique em 'Cadastre-se'.");
       }
     }
 
@@ -165,7 +198,7 @@
       checkAuth();
     }
 
-    // VERIFICA SE JÁ ESTÁ LOGADO AO ABRIR
+    // CHECAGEM DE ESTADO DE AUTENTICAÇÃO
     function checkAuth() {
       document.getElementById('screen-login').classList.add('hidden');
       document.getElementById('screen-register').classList.add('hidden');
@@ -175,13 +208,13 @@
       if (activeUser) {
         document.getElementById('screen-app').classList.remove('hidden');
         document.getElementById('appWelcome').innerText = "Olá, " + activeUser.name + "!";
-        document.getElementById('appUserType').innerText = activeUser.type === 'client' ? 'Perfil: Cliente' : 'Perfil: Prestador de Serviço';
+        document.getElementById('appUserType').innerText = activeUser.type === 'client' ? 'Perfil: Cliente (Contratante)' : 'Perfil: Prestador de Serviço';
       } else {
         document.getElementById('screen-login').classList.remove('hidden');
       }
     }
 
-    // Inicializa
+    // Inicializa a aplicação
     checkAuth();
   </script>
 </body>
