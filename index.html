@@ -3,441 +3,187 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bico Perto — Tem serviço? Tem alguém perto para fazer.</title>
+  <title>Bico Perto</title>
   <style>
-    :root {
-      --primary: #6c5ce7;
-      --primary-dark: #574b90;
-      --secondary: #00b894;
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --text: #2d3436;
-      --text-muted: #636e72;
-      --border: #dfe6e9;
-      --danger: #d63031;
-      --warning: #fdcb6e;
-    }
+    :root { --primary: #6c5ce7; --secondary: #00b894; --bg: #f8f9fa; --card: #ffffff; --text: #2d3436; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 500px; margin: 0 auto; }
+    
+    .card { background: var(--card); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #dfe6e9; }
+    .btn { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; margin-top: 8px; cursor: pointer; }
+    .btn-sec { background: var(--secondary); }
+    .btn-flat { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+    
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; }
+    .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; display: flex; flex-direction: column; min-height: 100vh; }
-
-    /* Header */
-    header { background-color: var(--primary); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .logo-area h1 { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-    .logo-area p { font-size: 0.65rem; opacity: 0.9; }
-
-    .user-badge { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; }
-    .user-avatar-header { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: #fff; }
-
-    /* Bottom Navigation */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; color: var(--text-muted); text-decoration: none; cursor: pointer; border: none; background: none; flex: 1; }
-    .nav-item.active { color: var(--primary); font-weight: bold; }
-    .nav-item span { font-size: 1.2rem; margin-bottom: 2px; }
-
-    /* Main Container */
-    .container { padding: 16px; max-width: 600px; margin: 0 auto; width: 100%; }
-
-    /* Cards & Components */
-    .card { background: var(--card-bg); border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .btn { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; margin-top: 8px; }
-    .btn-secondary { background: var(--secondary); }
-    .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
-    .btn-danger { background: var(--danger); }
-    .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; }
-
-    /* Form Fields */
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: var(--text); }
-    .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; background: #fff; }
-    .form-control:focus { border-color: var(--primary); }
-
-    /* Job Card Feed */
-    .job-card { border-left: 4px solid var(--primary); }
-    .job-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-    .job-title { font-size: 0.95rem; font-weight: bold; }
-    .job-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; gap: 10px; margin: 6px 0; }
-    .job-price { font-size: 0.9rem; font-weight: 800; color: var(--secondary); margin-top: 4px; }
-    .job-photo-preview { width: 100%; max-height: 180px; object-fit: cover; border-radius: 8px; margin-top: 8px; }
-
-    /* Proposals */
-    .proposal-card { background: #f1f2f6; border-radius: 8px; padding: 10px; margin-top: 8px; }
-    .provider-profile { display: flex; align-items: center; gap: 10px; }
-    .provider-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #ccc; }
-
-    /* Stars rating */
-    .star-rating { display: flex; gap: 6px; font-size: 1.5rem; cursor: pointer; justify-content: center; margin: 10px 0; }
-    .star-rating span { color: #ccc; }
-    .star-rating span.active { color: #f1c40f; }
-
-    /* View Controller */
-    .view-section { display: none; }
-    .view-section.active { display: block; }
+    /* Esconde elementos por padrão */
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
-  <header>
-    <div class="logo-area">
-      <h1>📍 Bico Perto</h1>
-      <p>Tem serviço? Tem alguém perto para fazer.</p>
+  <h2 style="color:var(--primary); text-align:center; margin-bottom:16px;">📍 Bico Perto</h2>
+
+  <!-- TELA 1: LOGIN -->
+  <div id="screen-login" class="card">
+    <h3>🔑 Entrar na Conta</h3>
+    <div class="form-group" style="margin-top:10px;">
+      <label>E-mail ou Telefone</label>
+      <input type="text" id="loginUser" class="form-control" placeholder="seuemail@exemplo.com">
     </div>
-    <div id="headerUserArea">
-      <!-- Injetado dinamicamente -->
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
     </div>
-  </header>
-
-  <!-- Content Container -->
-  <div class="container">
-
-    <!-- ==================== TELA DE LOGIN / CADASTRO ==================== -->
-    <div id="view-auth" class="view-section active">
-      <div class="card" id="loginCard">
-        <h2>🔑 Entrar no Bico Perto</h2>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Acesse sua conta de Cliente ou Prestador</p>
-        
-        <div class="form-group">
-          <label>E-mail ou Telefone</label>
-          <input type="text" id="loginEmail" class="form-control" placeholder="seuemail@exemplo.com">
-        </div>
-        <div class="form-group">
-          <label>Senha</label>
-          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••">
-        </div>
-
-        <button class="btn" onclick="handleLogin()">Entrar</button>
-        <button class="btn btn-outline" style="margin-top:8px;" onclick="toggleAuthMode('register')">Não tem conta? Cadastre-se</button>
-      </div>
-
-      <div class="card" id="registerCard" style="display:none;">
-        <h2>📝 Criar Nova Conta</h2>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">Preencha seus dados para começar</p>
-        
-        <div class="form-group">
-          <label>Tipo de Conta</label>
-          <select id="regType" class="form-control">
-            <option value="client">Quero Contratar (Cliente)</option>
-            <option value="provider">Quero Fazer Bicos (Prestador)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Nome Completo</label>
-          <input type="text" id="regName" class="form-control" placeholder="Ex: João Silva">
-        </div>
-        <div class="form-group">
-          <label>E-mail</label>
-          <input type="email" id="regEmail" class="form-control" placeholder="seuemail@exemplo.com">
-        </div>
-        <div class="form-group">
-          <label>Telefone / WhatsApp</label>
-          <input type="text" id="regPhone" class="form-control" placeholder="(11) 99999-8888">
-        </div>
-        <div class="form-group">
-          <label>Cidade / Bairro</label>
-          <input type="text" id="regCity" class="form-control" placeholder="São Paulo - SP">
-        </div>
-        <div class="form-group">
-          <label>Foto de Perfil</label>
-          <input type="file" id="regPhoto" class="form-control" accept="image/*" onchange="previewImage(this, 'avatarPreview')">
-          <img id="avatarPreview" style="width:60px; height:60px; border-radius:50%; margin-top:8px; display:none; object-fit:cover;">
-        </div>
-        <div class="form-group">
-          <label>Senha</label>
-          <input type="password" id="regPassword" class="form-control" placeholder="••••••••">
-        </div>
-
-        <button class="btn btn-secondary" onclick="handleRegister()">Concluir Cadastro</button>
-        <button class="btn btn-outline" style="margin-top:8px;" onclick="toggleAuthMode('login')">Já tem conta? Faça Login</button>
-      </div>
-    </div>
-
-
-    <!-- ==================== TELA PRINCIPAL (FEED / CLIENTE OU PRESTADOR) ==================== -->
-    <div id="view-feed" class="view-section">
-      
-      <!-- Painel Cliente -->
-      <div id="clientPanel" style="display:none;">
-        <div class="card">
-          <h3>✨ O que você precisa hoje?</h3>
-          <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">Publicar um novo pedido de serviço local</p>
-
-          <div class="form-group">
-            <label>Título do Bico</label>
-            <input type="text" id="jobTitleInput" class="form-control" placeholder="Ex: Preciso trocar chuveiro queimado">
-          </div>
-          <div class="form-group">
-            <label>Categoria</label>
-            <select id="jobCategoryInput" class="form-control">
-              <option value="Casa & Reparos">Casa & Reparos</option>
-              <option value="Montagem de Móveis">Montagem de Móveis</option>
-              <option value="Limpeza">Limpeza</option>
-              <option value="Tecnologia">Tecnologia</option>
-              <option value="Entregas">Entregas</option>
-              <option value="Veículos">Veículos</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Foto do Local/Serviço (Opcional)</label>
-            <input type="file" id="jobPhotoInput" class="form-control" accept="image/*" onchange="previewImage(this, 'jobPhotoPreview')">
-            <img id="jobPhotoPreview" style="width:100%; max-height:150px; border-radius:8px; margin-top:8px; display:none; object-fit:cover;">
-          </div>
-          <div class="form-group">
-            <label>Quanto pretende pagar (R$)</label>
-            <input type="number" id="jobBudgetInput" class="form-control" placeholder="Ex: 80">
-          </div>
-
-          <button class="btn" onclick="publishNewJob()">🚀 Publicar Bico</button>
-        </div>
-
-        <h3>📋 Meus Pedidos Publicados</h3>
-        <div id="clientJobsContainer" style="margin-top: 8px;"></div>
-      </div>
-
-      <!-- Painel Prestador -->
-      <div id="providerPanel" style="display:none;">
-        <div class="card" style="background: linear-gradient(135deg, #10ac84, #1dd1a1); color: white;">
-          <div style="font-size: 0.75rem; opacity: 0.9;">SEU PROFILE DE PRESTADOR</div>
-          <div style="font-size: 1.3rem; font-weight: bold; margin: 4px 0;" id="providerStatsName">--</div>
-          <div style="font-size: 0.8rem;" id="providerStatsRating">⭐ 5.0 (0 bicos realizados)</div>
-        </div>
-
-        <h3>📌 Bicos Disponíveis na Região</h3>
-        <div id="providerFeedContainer" style="margin-top: 8px;"></div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TELA DE PERFIL ==================== -->
-    <div id="view-profile" class="view-section">
-      <div class="card" style="text-align: center;">
-        <img id="profileImgDisplay" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 8px;">
-        <h3 id="profileNameDisplay">--</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted);" id="profileEmailDisplay">--</p>
-        <p style="font-size: 0.8rem; color: var(--primary); font-weight: bold; margin-top: 4px;" id="profileTypeDisplay">--</p>
-
-        <button class="btn btn-danger" style="margin-top: 16px;" onclick="handleLogout()">🚪 Sair da Conta</button>
-      </div>
-    </div>
-
+    <button class="btn" onclick="execLogin()">Entrar</button>
+    <button class="btn btn-flat" onclick="goToRegister()">Não tem conta? Cadastre-se</button>
   </div>
 
-
-  <!-- MODAL DE PROPOSTA -->
-  <div id="proposalModal" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; padding: 16px;">
-    <div class="card" style="max-width: 500px; margin: 40px auto;">
-      <h3>📩 Enviar Oferta / Proposta</h3>
-      <p id="modalProposalJobTitle" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;"></p>
-
-      <div class="form-group">
-        <label>Seu Preço (R$)</label>
-        <input type="number" id="propValue" class="form-control" placeholder="Ex: 90">
-      </div>
-      <div class="form-group">
-        <label>Sua Mensagem</label>
-        <textarea id="propMsg" class="form-control" rows="3" placeholder="Ex: Consigo realizar hoje à tarde. Já possuo as ferramentas."></textarea>
-      </div>
-
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-outline" onclick="closeProposalModal()">Cancelar</button>
-        <button class="btn btn-secondary" onclick="submitProposal()">Enviar Proposta</button>
-      </div>
+  <!-- TELA 2: CADASTRO -->
+  <div id="screen-register" class="card hidden">
+    <h3>📝 Criar Conta</h3>
+    <div class="form-group" style="margin-top:10px;">
+      <label>Tipo de Conta</label>
+      <select id="regType" class="form-control">
+        <option value="client">Cliente (Quero Contratar)</option>
+        <option value="provider">Prestador (Quero Fazer Bicos)</option>
+      </select>
     </div>
+    <div class="form-group">
+      <label>Nome Completo</label>
+      <input type="text" id="regName" class="form-control" placeholder="Ex: Maria Silva">
+    </div>
+    <div class="form-group">
+      <label>Telefone / WhatsApp</label>
+      <input type="text" id="regPhone" class="form-control" placeholder="(11) 99999-8888">
+    </div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="regEmail" class="form-control" placeholder="maria@email.com">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="regPass" class="form-control" placeholder="••••••••">
+    </div>
+    <button class="btn btn-sec" onclick="execRegister()">Cadastrar e Enviar SMS</button>
+    <button class="btn btn-flat" onclick="goToLogin()">Já tem conta? Fazer Login</button>
   </div>
 
-
-  <!-- MODAL DE AVALIAÇÃO DO SERVIÇO -->
-  <div id="ratingModal" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 2000; padding: 16px;">
-    <div class="card" style="max-width: 500px; margin: 40px auto; text-align: center;">
-      <h3>⭐ Avaliar Prestador</h3>
-      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Como foi o serviço realizado?</p>
-
-      <div class="star-rating" id="starRatingBox">
-        <span onclick="setRating(1)">★</span>
-        <span onclick="setRating(2)">★</span>
-        <span onclick="setRating(3)">★</span>
-        <span onclick="setRating(4)">★</span>
-        <span onclick="setRating(5)">★</span>
-      </div>
-
-      <div class="form-group">
-        <textarea id="ratingComment" class="form-control" placeholder="Deixe um elogio ou comentário sobre o atendimento..."></textarea>
-      </div>
-
-      <button class="btn btn-secondary" onclick="saveRating()">Enviar Avaliação</button>
+  <!-- TELA 3: CONFIRMAÇÃO SMS -->
+  <div id="screen-sms" class="card hidden">
+    <h3>📱 Validação por SMS</h3>
+    <div id="smsCodeBox" style="background:#fff3cd; padding:10px; border-radius:6px; margin:10px 0; color:#856404; font-weight:bold; text-align:center;"></div>
+    <div class="form-group">
+      <label>Digite o código de 4 dígitos:</label>
+      <input type="number" id="smsInput" class="form-control" placeholder="1234">
     </div>
+    <button class="btn btn-sec" onclick="confirmSMS()">Confirmar Código</button>
   </div>
 
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <button class="nav-item active" onclick="switchTab('feed')" id="nav-feed">
-      <span>⚡</span>
-      Bicos
-    </button>
-    <button class="nav-item" onclick="switchTab('profile')" id="nav-profile">
-      <span>👤</span>
-      Perfil
-    </button>
-  </nav>
+  <!-- TELA 4: ÁREA LOGADA -->
+  <div id="screen-app" class="card hidden">
+    <h3 id="appWelcome">Bem-vindo!</h3>
+    <p id="appUserType" style="color:gray; font-size:0.85rem; margin-bottom:12px;"></p>
+    <button class="btn btn-flat" style="border-color:#d63031; color:#d63031;" onclick="execLogout()">🚪 Sair da Conta</button>
+  </div>
 
   <script>
-    // ================= ESTADO E PERSISTÊNCIA (LOCALSTORAGE) =================
-    let currentUser = JSON.parse(localStorage.getItem('bp_current_user')) || null;
     let users = JSON.parse(localStorage.getItem('bp_users')) || [];
-    let jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
+    let activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
+    let pendingUser = null;
+    let generatedPin = null;
 
-    let currentRatingValue = 5;
-    let selectedJobForAction = null;
-    let selectedJobForProposal = null;
-    let tempBase64Photo = '';
-
-    // ================= UPLOAD DE FOTOS (CONVERSOR BASE64) =================
-    function previewImage(input, previewId) {
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          tempBase64Photo = e.target.result;
-          const imgEl = document.getElementById(previewId);
-          imgEl.src = tempBase64Photo;
-          imgEl.style.display = 'block';
-        }
-        reader.readAsDataURL(file);
-      }
+    // NAVEGAÇÃO ENTRE TELAS
+    function goToRegister() {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-register').classList.remove('hidden');
     }
 
-    // ================= LOGIN E CADASTRO =================
-    function toggleAuthMode(mode) {
-      if (mode === 'register') {
-        document.getElementById('loginCard').style.display = 'none';
-        document.getElementById('registerCard').style.display = 'block';
-      } else {
-        document.getElementById('loginCard').style.display = 'block';
-        document.getElementById('registerCard').style.display = 'none';
-      }
-      tempBase64Photo = '';
+    function goToLogin() {
+      document.getElementById('screen-register').classList.add('hidden');
+      document.getElementById('screen-sms').classList.add('hidden');
+      document.getElementById('screen-login').classList.remove('hidden');
     }
 
-    function handleRegister() {
+    // CADASTRO E SMS
+    function execRegister() {
       const name = document.getElementById('regName').value;
-      const email = document.getElementById('regEmail').value;
       const phone = document.getElementById('regPhone').value;
-      const city = document.getElementById('regCity').value;
-      const pass = document.getElementById('regPassword').value;
+      const email = document.getElementById('regEmail').value;
+      const pass = document.getElementById('regPass').value;
       const type = document.getElementById('regType').value;
 
-      if (!name || !email || !pass) return alert("Preencha os campos obrigatórios (Nome, E-mail e Senha)!");
-
-      const newUser = {
-        id: Date.now(),
-        name, email, phone, city, pass, type,
-        photo: tempBase64Photo || 'https://via.placeholder.com/80',
-        rating: 5.0,
-        completedJobs: 0
-      };
-
-      users.push(newUser);
-      localStorage.setItem('bp_users', JSON.stringify(users));
-
-      currentUser = newUser;
-      localStorage.setItem('bp_current_user', JSON.stringify(currentUser));
-
-      alert("🎉 Cadastro realizado com sucesso!");
-      initApp();
-    }
-
-    function handleLogin() {
-      const email = document.getElementById('loginEmail').value;
-      const pass = document.getElementById('loginPassword').value;
-
-      const user = users.find(u => u.email === email && u.pass === pass);
-      if (!user) return alert("E-mail ou senha incorretos!");
-
-      currentUser = user;
-      localStorage.setItem('bp_current_user', JSON.stringify(currentUser));
-      initApp();
-    }
-
-    function handleLogout() {
-      currentUser = null;
-      localStorage.removeItem('bp_current_user');
-      initApp();
-    }
-
-    // ================= GERENCIAMENTO DE TELAS E ABAS =================
-    function initApp() {
-      if (!currentUser) {
-        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-        document.getElementById('view-auth').classList.add('active');
-        document.getElementById('headerUserArea').innerHTML = `<span style="font-size:0.75rem;">Visitante</span>`;
+      if (!name || !phone || !pass) {
+        alert("Preencha Nome, Telefone e Senha!");
         return;
       }
 
-      // Header User Info
-      document.getElementById('headerUserArea').innerHTML = `
-        <div class="user-badge">
-          <img src="${currentUser.photo}" class="user-avatar-header">
-          <span>${currentUser.name.split(' ')[0]} (${currentUser.type === 'client' ? 'Cliente' : 'Prestador'})</span>
-        </div>
-      `;
+      generatedPin = Math.floor(1000 + Math.random() * 9000);
+      pendingUser = { id: Date.now(), name, phone, email, pass, type };
 
-      switchTab('feed');
+      document.getElementById('screen-register').classList.add('hidden');
+      document.getElementById('screen-sms').classList.remove('hidden');
+      document.getElementById('smsCodeBox').innerText = "📲 SMS Recebido: Seu código de ativação é " + generatedPin;
     }
 
-    function switchTab(tab) {
-      if (!currentUser) return;
-
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-      if (tab === 'feed') {
-        document.getElementById('view-feed').classList.add('active');
-        document.getElementById('nav-feed').classList.add('active');
-
-        if (currentUser.type === 'client') {
-          document.getElementById('clientPanel').style.display = 'block';
-          document.getElementById('providerPanel').style.display = 'none';
-          renderClientJobs();
-        } else {
-          document.getElementById('clientPanel').style.display = 'none';
-          document.getElementById('providerPanel').style.display = 'block';
-          document.getElementById('providerStatsName').innerText = currentUser.name;
-          document.getElementById('providerStatsRating').innerText = `⭐ ${currentUser.rating} (${currentUser.completedJobs || 0} bicos realizados)`;
-          renderProviderFeed();
-        }
-      } else if (tab === 'profile') {
-        document.getElementById('view-profile').classList.add('active');
-        document.getElementById('nav-profile').classList.add('active');
-
-        document.getElementById('profileImgDisplay').src = currentUser.photo;
-        document.getElementById('profileNameDisplay').innerText = currentUser.name;
-        document.getElementById('profileEmailDisplay').innerText = currentUser.email;
-        document.getElementById('profileTypeDisplay').innerText = currentUser.type === 'client' ? 'Conta de Cliente' : 'Conta de Prestador de Serviço';
+    function confirmSMS() {
+      const inputPin = document.getElementById('smsInput').value;
+      if (inputPin == generatedPin) {
+        users.push(pendingUser);
+        localStorage.setItem('bp_users', JSON.stringify(users));
+        
+        activeUser = pendingUser;
+        localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
+        
+        alert("✅ Conta criada e verificada!");
+        checkAuth();
+      } else {
+        alert("❌ Código incorreto!");
       }
     }
 
-    // ================= CLIENTE: PUBLICAR E ACOMPANHAR =================
-    function publishNewJob() {
-      const title = document.getElementById('jobTitleInput').value;
-      const cat = document.getElementById('jobCategoryInput').value;
-      const budget = document.getElementById('jobBudgetInput').value;
+    // LOGIN E LOGOUT
+    function execLogin() {
+      const login = document.getElementById('loginUser').value;
+      const pass = document.getElementById('loginPass').value;
 
-      if (!title) return alert("Informe o título do bico!");
+      const found = users.find(u => (u.email === login || u.phone === login) && u.pass === pass);
+      if (found) {
+        activeUser = found;
+        localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
+        checkAuth();
+      } else {
+        alert("Usuário ou senha inválidos! (Se não cadastrou ainda, clique em Cadastre-se)");
+      }
+    }
 
-      const newJob = {
-        id: Date.now(),
-        clientId: currentUser.id,
-        clientName: currentUser.name,
-        title, category: cat,
-        budget: budget ? parseFloat(budget) : null,
-        photo: tempBase64Photo || null,
-        status: 'OPEN', // OPEN, CONTRACTED, FINISHED
-        proposals: []
-      };
+    function execLogout() {
+      activeUser = null;
+      localStorage.removeItem('bp_active_user');
+      checkAuth();
+    }
 
-      jobs.unshift(newJob);
-      localStorage.setItem('bp_jobs', JSON.stringify(jobs));
+    // VERIFICA SE JÁ ESTÁ LOGADO AO ABRIR
+    function checkAuth() {
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-register').classList.add('hidden');
+      document.getElementById('screen-sms').classList.add('hidden');
+      document.getElementById('screen-app').classList.add('hidden');
 
-      document.getElementById('jobTitleInput').value = '';
-   
+      if (activeUser) {
+        document.getElementById('screen-app').classList.remove('hidden');
+        document.getElementById('appWelcome').innerText = "Olá, " + activeUser.name + "!";
+        document.getElementById('appUserType').innerText = activeUser.type === 'client' ? 'Perfil: Cliente' : 'Perfil: Prestador de Serviço';
+      } else {
+        document.getElementById('screen-login').classList.remove('hidden');
+      }
+    }
+
+    // Inicializa
+    checkAuth();
+  </script>
+</body>
+</html>
+
