@@ -56,10 +56,10 @@
 
   <!-- TELA 1: LOGIN -->
   <div id="screen-login" class="card">
-    <h3 style="margin-bottom: 12px;">🔑 Entrar</h3>
+    <h3 style="margin-bottom: 12px;">🔑 Entrar na Conta</h3>
     <div class="form-group">
       <label>CPF ou E-mail</label>
-      <input type="text" id="loginUser" class="form-control" placeholder="CPF ou E-mail">
+      <input type="text" id="loginUser" class="form-control" placeholder="Digite seu CPF ou E-mail">
     </div>
     <div class="form-group">
       <label>Senha</label>
@@ -148,14 +148,14 @@
     <div style="text-align: center; margin-bottom: 12px;">
       <img id="userAvatar" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
       <h3 id="appWelcome" style="margin-top: 4px;">--</h3>
-      <div id="appRating" class="stars">★ 5.0 (Novo Usuário)</div>
+      <div id="appRating" class="stars">★ 5.0</div>
       <span class="badge-verified">✓ CPF Validado</span>
     </div>
 
     <div style="background:#f1f2f6; padding:10px; border-radius:8px; margin-bottom:12px; font-size:0.8rem; line-height: 1.3;">
       <p><strong>Tipo:</strong> <span id="appProfileType">--</span></p>
       <p><strong>CPF (Protegido):</strong> <span id="appCpfDisplay">--</span></p>
-      <p><strong>Endereço (Aproximado):</strong> <span id="appAddressDisplay">--</span></p>
+      <p><strong>Endereço:</strong> <span id="appAddressDisplay">--</span></p>
     </div>
 
     <!-- PAINEL CLIENTE -->
@@ -194,13 +194,19 @@
     let generatedPin = null;
     let tempMedia = { photoProfile: '', photoDoc: '', photoAddress: '' };
 
-    try {
-      users = JSON.parse(localStorage.getItem('bp_users')) || [];
-      jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
-      activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
-    } catch (e) { console.log(e); }
+    function loadData() {
+      try {
+        users = JSON.parse(localStorage.getItem('bp_users')) || [];
+        jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
+        activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
+      } catch (e) {
+        console.error("Erro no carregamento:", e);
+      }
+    }
 
-    // MÁSCARA DE PROTEÇÃO DE DADOS (Ex: J*** S*** | *****12345)
+    loadData();
+
+    // MÁSCARAS DE PROTEÇÃO
     function maskName(fullName) {
       if (!fullName) return '';
       const parts = fullName.trim().split(' ');
@@ -218,10 +224,10 @@
     function maskAddress(addr) {
       if (!addr) return '';
       const parts = addr.split(',');
-      return parts.length > 1 ? `Bairro/Região: ${parts[1] || parts[0]}` : addr;
+      return parts.length > 1 ? `Região: ${parts[1] || parts[0]}` : addr;
     }
 
-    // VALIDADOR MATEMÁTICO CPF
+    // VALIDADOR MATEMÁTICO DE CPF
     function isValidCPF(cpf) {
       cpf = cpf.replace(/[^\d]+/g, '');
       if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
@@ -248,13 +254,13 @@
         img.src = e.target.result;
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const maxDim = 350;
+          const maxDim = 300;
           let w = img.width, h = img.height;
           if (w > h) { if (w > maxDim) { h *= maxDim / w; w = maxDim; } }
           else { if (h > maxDim) { w *= maxDim / h; h = maxDim; } }
           canvas.width = w; canvas.height = h;
           canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-          const compressed = canvas.toDataURL('image/jpeg', 0.5);
+          const compressed = canvas.toDataURL('image/jpeg', 0.4);
           tempMedia[mediaKey] = compressed;
           const previewEl = document.getElementById(previewId);
           previewEl.src = compressed; previewEl.style.display = 'block';
@@ -274,7 +280,7 @@
       document.getElementById('screen-login').classList.remove('hidden');
     }
 
-    // CADASTRO + WHATSAPP
+    // CADASTRO
     function execRegister() {
       const type = document.getElementById('regType').value;
       const name = document.getElementById('regName').value.trim();
@@ -321,17 +327,28 @@
       }
     }
 
+    // LOGIN CORRIGIDO
     function execLogin() {
-      const login = document.getElementById('loginUser').value.replace(/\D/g, '') || document.getElementById('loginUser').value.trim();
+      loadData();
+      const rawInput = document.getElementById('loginUser').value.trim();
+      const cleanCpfInput = rawInput.replace(/\D/g, '');
       const pass = document.getElementById('loginPass').value;
 
-      const found = users.find(u => (u.cpf === login || u.email === login) && u.pass === pass);
+      if (!rawInput || !pass) return alert("⚠️ Preencha usuário/CPF e senha!");
+
+      const found = users.find(u => {
+        const uCpfClean = u.cpf ? u.cpf.replace(/\D/g, '') : '';
+        const isCpfMatch = cleanCpfInput.length > 0 && uCpfClean === cleanCpfInput;
+        const isEmailMatch = u.email && u.email.toLowerCase() === rawInput.toLowerCase();
+        return (isCpfMatch || isEmailMatch) && u.pass === pass;
+      });
+
       if (found) {
         activeUser = found;
         localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
         checkAuth();
       } else {
-        alert("❌ Dados incorretos ou conta não encontrada.");
+        alert("❌ CPF/E-mail ou senha incorretos! Se você ainda não concluiu o cadastro com o código do WhatsApp, cadastre-se novamente.");
       }
     }
 
@@ -341,7 +358,7 @@
       checkAuth();
     }
 
-    // GESTÃO DE BICOS & PROPOSTAS
+    // BICOS & PROPOSTAS
     function publishJob() {
       const title = document.getElementById('jobTitle').value.trim();
       const date = document.getElementById('jobDate').value;
@@ -358,7 +375,7 @@
         clientPhone: activeUser.phone,
         clientRating: activeUser.rating || 5.0,
         title, date, price,
-        status: 'open', // open, accepted, refused, negotiating
+        status: 'open',
         providerId: null,
         providerName: null,
         chat: []
@@ -417,7 +434,7 @@
       }
     }
 
-    // RENDERIZAÇÃO
+    // RENDERIZAÇÃO DA INTERFACE
     function renderJobs() {
       if (activeUser.type === 'client') {
         const myJobs = jobs.filter(j => j.clientId === activeUser.id && j.status !== 'refused');
@@ -425,7 +442,7 @@
           <div class="job-card">
             <strong>${j.title}</strong> — R$ ${j.price || 'A combinar'}
             <p style="font-size:0.75rem; color:gray; margin-top:2px;">📅 ${new Date(j.date).toLocaleString('pt-BR')}</p>
-            <p style="font-size:0.8rem; margin-top:4px;"><strong>Status:</strong> ${j.status === 'open' ? '⏳ Aguardando Prestador' : j.status === 'accepted' ? '✅ Aceito por ' + maskName(j.providerName) : '💬 Em Negociação'}</p>
+            <p style="font-size:0.8rem; margin-top:4px;"><strong>Status:</strong> ${j.status === 'open' ? '⏳ Aguardando' : j.status === 'accepted' ? '✅ Aceito por ' + maskName(j.providerName) : '💬 Em Negociação'}</p>
             
             ${j.status === 'accepted' ? `
               <div style="background:#e8f8f5; padding:8px; border-radius:6px; margin-top:6px; font-size:0.78rem;">
@@ -446,17 +463,9 @@
                 ${j.chat.map(c => `<div class="chat-msg"><strong>${maskName(c.sender)}:</strong> ${c.text} <span style="font-size:0.65rem; color:gray;">${c.time}</span></div>`).join('')}
               </div>
               <div style="display:flex; gap:4px; margin-top:4px;">
-                <input type="text" id="chatClient_${j.id}" class="form-control" placeholder="Tirar dúvida / Proposta...">
+                <input type="text" id="chatClient_${j.id}" class="form-control" placeholder="Mensagem...">
                 <button class="btn btn-sec" style="width: auto; margin:0;" onclick="sendChat(${j.id}, 'chatClient_${j.id}')">Enviar</button>
               </div>
             ` : ''}
           </div>
-        `).join('') : '<p style="font-size:0.8rem; color:gray;">Nenhum pedido publicado.</p>';
-
-      } else {
-        // PAINEL PRESTADOR
-        const availableJobs = jobs.filter(j => j.status !== 'refused' && (j.status === 'open' || j.providerId === activeUser.id));
-        document.getElementById('providerJobsList').innerHTML = availableJobs.length ? availableJobs.map(j => `
-          <div class="job-card">
-            <strong>${j.title}</strong> — R$ ${j.price || 'A combinar'}
-            <p style=
+        `).join('') : '<p style="font-size:0.8rem; color:gray;">Nenhum pedido pu
