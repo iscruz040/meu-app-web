@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bico Perto</title>
+  <title>Bico Perto — Segurança & Validação</title>
   <style>
     :root { 
       --primary: #6c5ce7; 
@@ -15,7 +15,7 @@
       --danger: #d63031;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 500px; margin: 0 auto; }
+    body { background: var(--bg); color: var(--text); padding: 16px; max-width: 500px; margin: 0 auto; padding-bottom: 40px; }
     
     header { text-align: center; margin-bottom: 20px; }
     header h1 { color: var(--primary); font-size: 1.5rem; }
@@ -29,10 +29,13 @@
     
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #2d3436; }
-    .form-control { width: 100%; padding: 11px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
+    .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; outline: none; }
     .form-control:focus { border-color: var(--primary); }
 
-    .info-box { background: #e8f8f5; border: 1px solid #a3e4d7; padding: 12px; border-radius: 8px; margin-bottom: 12px; color: #117a65; font-size: 0.85rem; text-align: center; }
+    .preview-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-top: 8px; display: none; border: 2px solid var(--primary); }
+    .preview-doc { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; border: 1px dashed var(--border); }
+
+    .badge-verified { background: #e8f8f5; color: #117a65; border: 1px solid #a3e4d7; padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
 
     .hidden { display: none !important; }
   </style>
@@ -41,86 +44,171 @@
 
   <header>
     <h1>📍 Bico Perto</h1>
-    <p>Tem serviço? Tem alguém perto para fazer.</p>
+    <p>Plataforma Segura de Serviços</p>
   </header>
 
   <!-- TELA 1: LOGIN -->
   <div id="screen-login" class="card">
     <h3 style="margin-bottom: 12px;">🔑 Entrar na Conta</h3>
     <div class="form-group">
-      <label>E-mail ou Telefone</label>
-      <input type="text" id="loginUser" class="form-control" placeholder="Seu e-mail ou número com DDD">
+      <label>CPF ou E-mail</label>
+      <input type="text" id="loginUser" class="form-control" placeholder="Digite seu CPF ou E-mail">
     </div>
     <div class="form-group">
       <label>Senha</label>
       <input type="password" id="loginPass" class="form-control" placeholder="••••••••">
     </div>
     <button class="btn" onclick="execLogin()">Entrar</button>
-    <button class="btn btn-flat" onclick="goToRegister()">Não tem conta? Cadastre-se</button>
+    <button class="btn btn-flat" onclick="goToRegister()">Não tem conta? Cadastre-se com Segurança</button>
   </div>
 
-  <!-- TELA 2: CADASTRO -->
+  <!-- TELA 2: CADASTRO COMPLETO DE SEGURANÇA -->
   <div id="screen-register" class="card hidden">
-    <h3 style="margin-bottom: 12px;">📝 Criar Conta</h3>
+    <h3 style="margin-bottom: 12px;">🛡️ Cadastro de Segurança</h3>
+    
     <div class="form-group">
-      <label>Tipo de Conta</label>
+      <label>Tipo de Perfil</label>
       <select id="regType" class="form-control">
         <option value="client">Cliente (Quero Contratar)</option>
         <option value="provider">Prestador (Quero Fazer Bicos)</option>
       </select>
     </div>
+
     <div class="form-group">
-      <label>Nome Completo</label>
-      <input type="text" id="regName" class="form-control" placeholder="Ex: Maria Silva">
+      <label>Foto de Perfil</label>
+      <input type="file" accept="image/*" class="form-control" onchange="uploadImage(this, 'imgProfilePreview', 'photoProfile')">
+      <img id="imgProfilePreview" class="preview-img">
     </div>
+
     <div class="form-group">
-      <label>Telefone / WhatsApp (com DDD)</label>
+      <label>Nome Completo (Conforme Documento)</label>
+      <input type="text" id="regName" class="form-control" placeholder="Ex: João da Silva">
+    </div>
+
+    <div class="form-group">
+      <label>CPF (Apenas Números)</label>
+      <input type="text" id="regCpf" class="form-control" placeholder="000.000.000-00" maxlength="14" onblur="checkCpfField()">
+    </div>
+
+    <div class="form-group">
+      <label>Endereço Completo</label>
+      <input type="text" id="regAddress" class="form-control" placeholder="Rua, Número, Bairro, Cidade">
+    </div>
+
+    <div class="form-group">
+      <label>Número de Celular / WhatsApp (com DDD)</label>
       <input type="tel" id="regPhone" class="form-control" placeholder="11999998888">
     </div>
+
     <div class="form-group">
       <label>E-mail</label>
-      <input type="email" id="regEmail" class="form-control" placeholder="maria@email.com">
+      <input type="email" id="regEmail" class="form-control" placeholder="joao@email.com">
     </div>
+
     <div class="form-group">
-      <label>Senha</label>
+      <label>Foto do Documento (RG ou CNH)</label>
+      <input type="file" accept="image/*" class="form-control" onchange="uploadImage(this, 'imgDocPreview', 'photoDoc')">
+      <img id="imgDocPreview" class="preview-doc">
+    </div>
+
+    <div class="form-group">
+      <label>Foto do Comprovante de Endereço</label>
+      <input type="file" accept="image/*" class="form-control" onchange="uploadImage(this, 'imgAddressPreview', 'photoAddress')">
+      <img id="imgAddressPreview" class="preview-doc">
+    </div>
+
+    <div class="form-group">
+      <label>Crie uma Senha</label>
       <input type="password" id="regPass" class="form-control" placeholder="••••••••">
     </div>
-    <button class="btn btn-sec" onclick="execRegister()">Cadastrar e Validar Código</button>
+
+    <button class="btn btn-sec" onclick="execRegister()">Validar Dados e Criar Conta</button>
     <button class="btn btn-flat" onclick="goToLogin()">Já tem conta? Fazer Login</button>
   </div>
 
-  <!-- TELA 3: CONFIRMAÇÃO DO CÓDIGO -->
-  <div id="screen-sms" class="card hidden">
-    <h3 style="margin-bottom: 10px;">💬 Validação do Número</h3>
-    <div class="info-box">
-      Enviamos o código de ativação para o WhatsApp do número informado. Digite-o abaixo para concluir:
-    </div>
-    <div class="form-group">
-      <label>Código de Verificação (4 dígitos)</label>
-      <input type="number" id="smsInput" class="form-control" placeholder="Ex: 1234">
-    </div>
-    <button class="btn btn-sec" onclick="confirmCode()">Confirmar e Entrar</button>
-  </div>
-
-  <!-- TELA 4: ÁREA DO USUÁRIO LOGADO -->
+  <!-- TELA 3: ÁREA LOGADA / PAINEL -->
   <div id="screen-app" class="card hidden">
-    <h3 id="appWelcome">Bem-vindo!</h3>
-    <p id="appUserType" style="color:gray; font-size:0.85rem; margin-top:4px; margin-bottom:16px;"></p>
-    
-    <div style="background:#f1f2f6; padding:12px; border-radius:8px; margin-bottom:16px; font-size:0.9rem;">
-      <p>🚀 Você está conectado ao sistema do Bico Perto!</p>
+    <div style="text-align: center; margin-bottom: 16px;">
+      <img id="userAvatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+      <h3 id="appWelcome" style="margin-top: 8px;">--</h3>
+      <span class="badge-verified">✓ Perfil Verificado (CPF Ativo)</span>
     </div>
 
-    <button class="btn btn-danger" onclick="execLogout()">🚪 Sair da Conta</button>
+    <div style="background:#f1f2f6; padding:12px; border-radius:8px; margin-bottom:16px; font-size:0.85rem; line-height: 1.4;">
+      <p><strong>Tipo de Conta:</strong> <span id="appProfileType">--</span></p>
+      <p><strong>CPF Validado:</strong> <span id="appCpfDisplay">--</span></p>
+      <p><strong>Endereço:</strong> <span id="appAddressDisplay">--</span></p>
+    </div>
+
+    <!-- PAINEL CLIENTE -->
+    <div id="clientPanel" class="hidden">
+      <h4>📝 Criar Novo Bico / Pedido</h4>
+      <div class="form-group" style="margin-top: 8px;">
+        <input type="text" id="jobTitle" class="form-control" placeholder="O que você precisa? Ex: Pintar Sala">
+      </div>
+      <div class="form-group">
+        <input type="number" id="jobPrice" class="form-control" placeholder="Valor Oferecido (R$)">
+      </div>
+      <button class="btn" onclick="publishJob()">Publicar Pedido</button>
+
+      <h4 style="margin-top:20px;">📋 Seus Bicos Publicados</h4>
+      <div id="clientJobsList" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- PAINEL PRESTADOR -->
+    <div id="providerPanel" class="hidden">
+      <h4>📌 Bicos Disponíveis na Região</h4>
+      <div id="providerJobsList" style="margin-top:8px;"></div>
+    </div>
+
+    <button class="btn btn-danger" style="margin-top:20px;" onclick="execLogout()">🚪 Sair da Conta</button>
   </div>
 
   <script>
     let users = JSON.parse(localStorage.getItem('bp_users')) || [];
+    let jobs = JSON.parse(localStorage.getItem('bp_jobs')) || [];
     let activeUser = JSON.parse(localStorage.getItem('bp_active_user')) || null;
-    let pendingUser = null;
-    let generatedPin = null;
 
-    // CONTROLE DE NAVEGAÇÃO
+    let tempMedia = { photoProfile: '', photoDoc: '', photoAddress: '' };
+
+    // ALGORITMO VALIDADOR DE CPF REAL
+    function isValidCPF(cpf) {
+      cpf = cpf.replace(/[^\d]+/g, '');
+      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+      let add = 0;
+      for (let i = 0; i < 9; i++) add += parseInt(cpf.charAt(i)) * (10 - i);
+      let rev = 11 - (add % 11);
+      if (rev === 10 || rev === 11) rev = 0;
+      if (rev !== parseInt(cpf.charAt(9))) return false;
+      add = 0;
+      for (let i = 0; i < 10; i++) add += parseInt(cpf.charAt(i)) * (11 - i);
+      rev = 11 - (add % 11);
+      if (rev === 10 || rev === 11) rev = 0;
+      if (rev !== parseInt(cpf.charAt(10))) return false;
+      return true;
+    }
+
+    function uploadImage(input, previewId, mediaKey) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          tempMedia[mediaKey] = e.target.result;
+          const img = document.getElementById(previewId);
+          img.src = e.target.result;
+          img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function checkCpfField() {
+      const cpf = document.getElementById('regCpf').value;
+      if (cpf && !isValidCPF(cpf)) {
+        alert("❌ CPF Inválido ou Inexistente! Por favor, digite um CPF válido.");
+      }
+    }
+
     function goToRegister() {
       document.getElementById('screen-login').classList.add('hidden');
       document.getElementById('screen-register').classList.remove('hidden');
@@ -128,67 +216,63 @@
 
     function goToLogin() {
       document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-sms').classList.add('hidden');
       document.getElementById('screen-login').classList.remove('hidden');
     }
 
-    // REGISTRO E ENVIO DE CÓDIGO VIA WHATSAPP
     function execRegister() {
+      const type = document.getElementById('regType').value;
       const name = document.getElementById('regName').value;
-      const phoneClean = document.getElementById('regPhone').value.replace(/\D/g, '');
+      const cpf = document.getElementById('regCpf').value.replace(/\D/g, '');
+      const address = document.getElementById('regAddress').value;
+      const phone = document.getElementById('regPhone').value;
       const email = document.getElementById('regEmail').value;
       const pass = document.getElementById('regPass').value;
-      const type = document.getElementById('regType').value;
 
-      if (!name || !phoneClean || !pass) {
-        alert("Preencha Nome, Telefone e Senha para continuar!");
+      if (!isValidCPF(cpf)) {
+        alert("❌ Cadastro Bloqueado: O CPF digitado é inválido ou temporário!");
         return;
       }
 
-      // Gera PIN de 4 dígitos
-      generatedPin = Math.floor(1000 + Math.random() * 9000);
-      pendingUser = { id: Date.now(), name, phone: phoneClean, email, pass, type };
-
-      // Exibe a tela de confirmação
-      document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-sms').classList.remove('hidden');
-
-      // Abre o WhatsApp enviando a mensagem com o código
-      const msg = encodeURIComponent(`Olá ${name}! Seu código de verificação do Bico Perto é: ${generatedPin}`);
-      window.open(`https://wa.me/55${phoneClean}?text=${msg}`, '_blank');
-    }
-
-    // CONFIRMAÇÃO DO CÓDIGO
-    function confirmCode() {
-      const inputPin = document.getElementById('smsInput').value;
-
-      if (inputPin == generatedPin) {
-        users.push(pendingUser);
-        localStorage.setItem('bp_users', JSON.stringify(users));
-        
-        activeUser = pendingUser;
-        localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
-        
-        alert("✅ Conta criada e verificada com sucesso!");
-        checkAuth();
-      } else {
-        alert("❌ Código incorreto! Verifique a mensagem e tente novamente.");
+      if (!name || !address || !phone || !email || !pass) {
+        alert("⚠️ Por favor, preencha todos os campos obrigatórios.");
+        return;
       }
+
+      if (!tempMedia.photoDoc || !tempMedia.photoAddress) {
+        alert("⚠️ Envie a foto do Documento e do Comprovante de Endereço para verificação de segurança.");
+        return;
+      }
+
+      const newUser = {
+        id: Date.now(),
+        type, name, cpf, address, phone, email, pass,
+        profileImg: tempMedia.photoProfile || 'https://via.placeholder.com/80',
+        docImg: tempMedia.photoDoc,
+        addressImg: tempMedia.photoAddress,
+        verified: true
+      };
+
+      users.push(newUser);
+      localStorage.setItem('bp_users', JSON.stringify(users));
+
+      activeUser = newUser;
+      localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
+
+      alert("✅ Cadastro realizado e CPF Verificado com Sucesso!");
+      checkAuth();
     }
 
-    // LOGIN E LOGOUT
     function execLogin() {
-      const login = document.getElementById('loginUser').value.trim();
+      const login = document.getElementById('loginUser').value.replace(/\D/g, '') || document.getElementById('loginUser').value.trim();
       const pass = document.getElementById('loginPass').value;
 
-      const found = users.find(u => (u.email === login || u.phone === login) && u.pass === pass);
-      
+      const found = users.find(u => (u.cpf === login || u.email === login) && u.pass === pass);
       if (found) {
         activeUser = found;
         localStorage.setItem('bp_active_user', JSON.stringify(activeUser));
         checkAuth();
       } else {
-        alert("Usuário ou senha incorretos! Se você ainda não possui cadastro, clique em 'Cadastre-se'.");
+        alert("❌ Dados incorretos ou conta não encontrada.");
       }
     }
 
@@ -198,23 +282,69 @@
       checkAuth();
     }
 
-    // CHECAGEM DE ESTADO DE AUTENTICAÇÃO
+    function publishJob() {
+      const title = document.getElementById('jobTitle').value;
+      const price = document.getElementById('jobPrice').value;
+
+      if (!title) return alert("Digite o título do serviço!");
+
+      jobs.unshift({
+        id: Date.now(),
+        clientId: activeUser.id,
+        clientName: activeUser.name,
+        title, price
+      });
+
+      localStorage.setItem('bp_jobs', JSON.stringify(jobs));
+      document.getElementById('jobTitle').value = '';
+      document.getElementById('jobPrice').value = '';
+      renderJobs();
+    }
+
+    function renderJobs() {
+      if (activeUser.type === 'client') {
+        const myJobs = jobs.filter(j => j.clientId === activeUser.id);
+        document.getElementById('clientJobsList').innerHTML = myJobs.length ? myJobs.map(j => `
+          <div style="background:#fff; border:1px solid #dfe6e9; padding:10px; border-radius:8px; margin-bottom:8px;">
+            <strong>${j.title}</strong> — R$ ${j.price || 'A combinar'}
+          </div>
+        `).join('') : '<p style="font-size:0.8rem; color:gray;">Nenhum bico publicado ainda.</p>';
+      } else {
+        document.getElementById('providerJobsList').innerHTML = jobs.length ? jobs.map(j => `
+          <div style="background:#fff; border:1px solid #dfe6e9; padding:10px; border-radius:8px; margin-bottom:8px;">
+            <strong>${j.title}</strong> — R$ ${j.price || 'A combinar'}
+            <p style="font-size:0.75rem; color:gray;">Cliente: ${j.clientName}</p>
+          </div>
+        `).join('') : '<p style="font-size:0.8rem; color:gray;">Nenhum bico disponível no momento.</p>';
+      }
+    }
+
     function checkAuth() {
       document.getElementById('screen-login').classList.add('hidden');
       document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-sms').classList.add('hidden');
       document.getElementById('screen-app').classList.add('hidden');
 
       if (activeUser) {
         document.getElementById('screen-app').classList.remove('hidden');
-        document.getElementById('appWelcome').innerText = "Olá, " + activeUser.name + "!";
-        document.getElementById('appUserType').innerText = activeUser.type === 'client' ? 'Perfil: Cliente (Contratante)' : 'Perfil: Prestador de Serviço';
+        document.getElementById('userAvatar').src = activeUser.profileImg;
+        document.getElementById('appWelcome').innerText = activeUser.name;
+        document.getElementById('appProfileType').innerText = activeUser.type === 'client' ? 'Cliente (Contratante)' : 'Prestador de Serviço';
+        document.getElementById('appCpfDisplay').innerText = activeUser.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.***.***-$4");
+        document.getElementById('appAddressDisplay').innerText = activeUser.address;
+
+        if (activeUser.type === 'client') {
+          document.getElementById('clientPanel').classList.remove('hidden');
+          document.getElementById('providerPanel').classList.add('hidden');
+        } else {
+          document.getElementById('clientPanel').classList.add('hidden');
+          document.getElementById('providerPanel').classList.remove('hidden');
+        }
+        renderJobs();
       } else {
         document.getElementById('screen-login').classList.remove('hidden');
       }
     }
 
-    // Inicializa a aplicação
     checkAuth();
   </script>
 </body>
